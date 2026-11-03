@@ -1,0 +1,17 @@
+test_bad_submission_matrix_never_calls_model (test_service.EndpointTests.test_bad_submission_matrix_never_calls_model) ... ok
+test_detector_failure_is_json_not_a_fake_decision (test_service.EndpointTests.test_detector_failure_is_json_not_a_fake_decision) ... ok
+test_five_appeals_preserve_decisions_and_reasoning (test_service.EndpointTests.test_five_appeals_preserve_decisions_and_reasoning) ... ok
+test_invalid_appeals_do_not_mutate_history (test_service.EndpointTests.test_invalid_appeals_do_not_mutate_history) ... ok
+test_ping_health_log (test_service.EndpointTests.test_ping_health_log) ... ok
+test_size_limits_and_boundary (test_service.EndpointTests.test_size_limits_and_boundary) ... ok
+test_submission_and_persistent_status (test_service.EndpointTests.test_submission_and_persistent_status) ... ok
+test_every_label_boundary_and_grid (test_service.ScoringTests.test_every_label_boundary_and_grid) ... ok
+test_strong_disagreement_stays_unsure (test_service.ScoringTests.test_strong_disagreement_stays_unsure) ... ok
+test_style_empty_short_and_varied (test_service.ScoringTests.test_style_empty_short_and_varied) ... ok
+test_style_measures_have_known_values (test_service.ScoringTests.test_style_measures_have_known_values) ... ok
+test_weighting_and_invalid_numbers (test_service.ScoringTests.test_weighting_and_invalid_numbers) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.173s
+
+OK

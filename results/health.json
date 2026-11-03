@@ -1,0 +1,13 @@
+{
+  "method": "GET",
+  "path": "/health",
+  "request": null,
+  "status_code": 200,
+  "response": {
+    "detector_loaded": true,
+    "detector_model": "gpt2",
+    "log_entries": 18,
+    "ok": true,
+    "rate_limiting": false
+  }
+}

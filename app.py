@@ -18,8 +18,9 @@ doesn't, it's the service itself.
 Routes:
 
     POST /ping        the worked example. Already works. Don't edit it
-    POST /submit      ← YOU BUILD THIS (Milestone 3, 4, 5)
-    POST /appeal      ← YOU BUILD THIS (Milestone 5)
+    POST /submit      validate, score, and record writing
+    POST /appeal      record a request for review
+    GET  /content/id   current status and appeal history
     GET  /log         the audit log. Already works
     GET  /health      is the service up, and is the model loaded
 """
@@ -161,7 +162,7 @@ def request_too_large(exc):
     return error("request_too_large", "Request body must be at most 100,000 bytes.", 413)
 
 
-# ── YOU BUILD THIS ────────────────────────────────────────────────────────────
+# ── Submission and appeal routes ─────────────────────────────────────────────
 
 @app.post("/submit")
 # @limiter.limit(f"{config.RATE_LIMIT_PER_MINUTE}/minute;{config.RATE_LIMIT_PER_DAY}/day")
@@ -200,32 +201,38 @@ def submit():
 
 @app.post("/appeal")
 def appeal():
-    """
-    A writer says you got it wrong. ← TODO — Milestone 5
+    """Keep the original decision and append the writer's request for review."""
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return error("invalid_json", "Send a JSON object with content_id and reasoning.")
+    content_id, reasoning = payload.get("content_id"), payload.get("reasoning")
+    if not isinstance(content_id, str) or not content_id.strip():
+        return error("invalid_content_id", "Content ID must be a nonempty string.")
+    if (not isinstance(reasoning, str) or not reasoning.strip()
+            or len(reasoning) > config.MAX_REASONING_CHARS):
+        return error("invalid_reasoning", "Reasoning must contain 1 to 2,000 characters.")
+    entries = audit.entries_for(content_id)
+    original = next((entry for entry in entries if entry.get("status") == "decided"), None)
+    if original is None:
+        return error("content_not_found", "No submission has that content ID.", 404)
+    audit.log_appeal(content_id, original["creator_id"], reasoning)
+    return jsonify({"content_id": content_id, "status": "under_review",
+                    "message": "Your appeal has been recorded. Your submission is under review."})
 
-    Expects JSON:
-        {"content_id": "...", "reasoning": "..."}
 
-    Should:
-      1. Check the content_id actually exists — `audit.entries_for(id)` tells
-         you. A typo here fails silently and looks like a broken endpoint,
-         which is the single most common way this milestone eats an hour.
-      2. Record the appeal with `audit.log_appeal(...)`, which moves the item
-         to `under_review`.
-      3. Confirm to the writer. No automatic re-checking needed.
-
-    This is the smallest endpoint in the project and the one that matters most
-    to the person on the other end. It's the only thing standing between a
-    wrong accusation and nothing at all.
-    """
-    payload = request.get_json(silent=True) or {}
-
-    # TODO: delete this and build the route.
-    return jsonify({
-        "error": "not_implemented",
-        "message": "POST /appeal isn't built yet — see the TODO in app.py.",
-        "you_sent": payload,
-    }), 501
+@app.get("/content/<content_id>")
+def get_content(content_id):
+    """Rebuild current state from persistent, append-only history."""
+    entries = audit.entries_for(content_id)
+    original = next((entry for entry in entries if entry.get("status") == "decided"), None)
+    if original is None:
+        return error("content_not_found", "No submission has that content ID.", 404)
+    appeals = [entry for entry in entries if entry.get("event") == "appeal"]
+    current = dict(original)
+    current.update(confidence=original["combined_score"],
+                   status="under_review" if appeals else "decided",
+                   appeals=appeals)
+    return jsonify(current)
 
 
 # ── Already works ─────────────────────────────────────────────────────────────

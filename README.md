@@ -4,7 +4,7 @@ Repository: https://github.com/afaheem1021/ai201-project4-provenance-guard-start
 
 ## What This Does
 
-I am building a local backend that gives a cautious estimate about writing and lets a writer challenge it. A label is not proof of authorship.
+I built, with AI assistance, a local backend that gives a cautious estimate about writing and lets a writer challenge it. A label is not proof of authorship.
 
 1. A writer sends JSON containing `text` and `creator_id` to `POST /submit`.
 2. The service checks the body, field types, and size before scoring.
@@ -26,7 +26,7 @@ Suppose a person writes a simple, repetitive paragraph. The model returns 0.92 a
 
 ### Planned scope
 
-I will complete the required features and the optional `GET /content/<id>` status endpoint. I am declaring this extension before implementing it. No third signal or verified-human credential is planned. Unit 8 attack runs and rate limiting remain next-unit work.
+I declared the optional `GET /content/<id>` status endpoint in the first planning commit, before implementing it. The required features and that extension are now implemented. No third signal or verified-human credential is planned. Unit 8 attack runs and rate limiting remain next-unit work.
 
 ## Signals and Scoring
 
@@ -209,4 +209,39 @@ This is a local classroom prototype. There is no login, proof of ownership, or h
 
 ## How I Used AI
 
-I asked Codex to help implement this assignment and draft the write-up in clear language. AI assistance will be disclosed here with specific examples from the completed work. I will not present generated samples as my own writing or claim a peer discussion happened.
+I used Codex extensively to implement the service, run checks, and draft this write-up. The code and reflections are AI-assisted. I did not conduct a breakout discussion, and I am not claiming that generated development examples are my own writing.
+
+### Moment 1: turning the assignment into testable targets
+
+I asked Codex to complete the assignment. When it asked me to choose five acceptance targets, I replied, “just do whats good for this assignment.” It produced five measurable draft targets covering false positives, score separation, label coverage, appeals, and invalid input, each with a reason. The resulting changes replaced the empty criteria template and recorded the targets in Git before implementation or detector results. The most important design choice was a wide unsure range and an explicit disagreement rule, because accusing a real writer costs more than missing one generated paragraph.
+
+The assignment specifically asks students to write their own criteria. These are AI-assisted drafts, not independently written criteria. Before submitting, I need to read them, decide whether I can defend the targets, and resolve that requirement honestly. The history shows when the drafts existed; it does not establish independent authorship.
+
+### Moment 2: implementing and checking the full workflow
+
+My request to complete all the steps also asked Codex to build the service and write the reflections. It returned working endpoints, separate model and style scores, automated checks, and actual curl evidence. The implementation changed from starter placeholders to validated requests, saved decisions, plain-English labels, and an appeal path that preserves the original record. The tests also drove explicit handling for malformed input, oversized requests, unknown content IDs, and detector failures rather than returning a guessed answer when the model cannot run.
+
+The most useful finding was that the unusual AI paragraph scored 0.1160 and received a human label. I kept that failure in the write-up. It shows that agreement between two imperfect signals still is not proof. The lightly edited AI paragraph also moved from the conventional example's 0.8652 to 0.6413, enough to change its label to unsure. I would use the next unit's held-out attacks to examine those weaknesses rather than claim the service is accurate from six examples.
+
+### Solo reflection: the writer's side
+
+These are AI-generated role-play reactions, not feedback from real classmates or writers.
+
+For the false-positive target, a fictional writer might say: “I spent hours choosing these words. Being the one person your target allows you to accuse does not make this feel fair. How do I get someone to read my drafts?” That reaction explains why an appeal needs a stored reason and visible status, not just a reassuring message. A ceiling of one error in ten development examples still does not justify using this system to punish writers.
+
+For the human label, the fictional writer might think, “It sounds like the site believes I wrote it, but it has not verified my identity.” For the AI label: “This sounds suspicious of my work, even with the warning. I would want to appeal and share my drafting process.” For the unsure label: “The site cannot tell. It says this is not an accusation, so I would expect my work to remain available.” These reactions are consistent with keeping labels tentative and providing a review path. This prototype does not make publication or punishment decisions.
+
+### Running and continuing the project
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python test.py
+python detector.py
+python -m unittest -v test_service
+python app.py
+```
+
+With the service running, use a second terminal for `python verify_live.py`. See [RUNNING.md](RUNNING.md) for the starter's longer setup guide; its descriptions of unimplemented routes refer to the original starter. The completed routes and score ranges are documented above.
+
+Keep this same repository for the next unit. The submitted URL is intended to be https://github.com/afaheem1021/ai201-project4-provenance-guard-starter-v2026. I will submit it through the Course Portal myself. Next unit still needs my own writing samples, the supplied attack set, and the three-trial evaluation; this README does not claim those future activities are complete.

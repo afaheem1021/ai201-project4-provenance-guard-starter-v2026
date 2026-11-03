@@ -108,3 +108,9 @@ RATE_LIMIT_STORAGE = "memory://"
 LOG_DIR = ROOT / "logs"
 AUDIT_LOG = LOG_DIR / "audit.jsonl"
 RESULTS_DIR = ROOT / "results"
+
+# Input limits apply before any detector work.
+MAX_REQUEST_BYTES = 100_000
+MAX_TEXT_CHARS = 10_000
+MAX_CREATOR_CHARS = 100
+MAX_REASONING_CHARS = 2_000

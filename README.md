@@ -52,7 +52,33 @@ The wide unsure range puts the cost of a false accusation ahead of catching ever
 
 ## Sample Run
 
-Implementation and recorded runs follow in later milestone commits. No results have been collected yet.
+### Milestone 3: one signal
+
+The temporary hardcoded route returned `{"content_id":"route-check","confidence":0.5,"guess":"unsure","label":"Route check only."}` over curl before the detector was connected. `/ping` also returned `ok: true`.
+
+Before wiring the detector, `python calibration.py --model-only` scored the frozen generated paragraph at 0.9146, the Carroll excerpt at 0.5745, and their concatenation at 0.6731. These are development fixtures with explicit provenance in `calibration.py`, not my personal writing.
+
+```powershell
+curl.exe -s -X POST http://127.0.0.1:5000/submit -H "Content-Type: application/json" --data-binary "@results/one_signal_request.json"
+curl.exe -s "http://127.0.0.1:5000/log?limit=1"
+```
+
+Request:
+```json
+{"text": "The system is designed to help users complete their tasks efficiently. It provides a simple and effective way to manage information. The system is easy to use and provides consistent results. Users can use the system to improve their productivity. Overall, the system provides a reliable and effective solution for users.", "creator_id": "milestone3-demo"}
+```
+
+Response (confidence/label are temporary milestone placeholders):
+```json
+{"confidence":0.5,"content_id":"63847a7b-dbb6-4efa-9dc4-3c3c15c38fa3","guess":"unsure","label":"One-signal development check; final label not connected.","model_score":0.9146,"status":"decided","style_score":null}
+
+```
+
+Log response:
+```json
+{"count":1,"entries":[{"combined_score":0.5,"content_id":"63847a7b-dbb6-4efa-9dc4-3c3c15c38fa3","creator_id":"milestone3-demo","guess":"unsure","label":"One-signal development check; final label not connected.","model_score":0.9146,"status":"decided","style_score":null,"timestamp":"2026-11-03T03:36:24+00:00"}]}
+
+```
 
 ## How I Used AI
 

@@ -32,13 +32,34 @@ I will complete the required features and the optional `GET /content/<id>` statu
 
 The model signal in `detector.py::model_signal` measures contextual next-token predictability using GPT-2 perplexity. AI prose may use predictable sequences, but so can children, second-language writers, and people writing plainly. It does not verify authorship or understand a writer's intent. Only the first 400 model tokens are examined. The starter's midpoint 45 and steepness 1.6 stay unchanged.
 
-The style signal in `stylometry.py::style_signal` will measure sentence length spread (population standard deviation divided by mean), unique words divided by all words, and Unicode punctuation characters divided by all characters. Repetitive, evenly paced prose may look AI-like. The measures cannot understand meaning, distinguish quoted text, or resist deliberate edits. Vocabulary variety depends on text length, and sentence splitting is approximate.
+The style signal in `stylometry.py::style_signal` measures sentence length spread (population standard deviation divided by mean), unique words divided by all words, and Unicode punctuation characters divided by all characters. Repetitive, evenly paced prose may look AI-like. The measures cannot understand meaning, distinguish quoted text, or resist deliberate edits. Vocabulary variety depends on text length, and sentence splitting is approximate.
 
 ### Combining rule, decided before coding or seeing results
 
-The rule will live in **`scoring.py::combine_signals`**, with settings in `config.py`. Start with `0.70 * model_score + 0.30 * style_score`. If the signals differ by at least 0.50, clamp the result to [0.40, 0.60] so the label stays unsure. The larger model weight reflects its use of context; it is a design choice, not evidence of measured accuracy.
+The rule lives in **`scoring.py::combine_signals`**, with settings in `config.py`. Start with `0.70 * model_score + 0.30 * style_score`. If the signals differ by at least 0.50, clamp the result to [0.40, 0.60] so the label stays unsure. The larger model weight reflects its use of context; it is a design choice, not evidence of measured accuracy.
 
 For style, use `0.50 * (1 - min(spread, 1)) + 0.30 * (1 - vocabulary_ratio) + 0.20 * (1 - min(punctuation_density / 0.12, 1))`. Fewer than 20 words or fewer than two word-containing sentences gives a neutral 0.50 because there is too little evidence. These are transparent heuristics, not a trained detector.
+
+### Development results
+
+These six fixtures were frozen before the first model run. Full texts and provenance are in `calibration.py`; full scores are in `results/calibration.jsonl`.
+
+| Fixture | Model | Style | Combined | Label |
+|---|---:|---:|---:|---|
+| generated_conventional | 0.9146 | 0.7498 | 0.8652 | ai |
+| human_literary | 0.5745 | 0.5000 | 0.5522 | unsure |
+| mixed | 0.6731 | 0.2770 | 0.5543 | unsure |
+| human_formal | 0.4651 | 0.5000 | 0.4756 | unsure |
+| lightly_edited_ai | 0.7203 | 0.4570 | 0.6413 | unsure |
+| generated_unusual | 0.0961 | 0.1625 | 0.1160 | human |
+
+The conventional generated example scores 0.3130 higher than the human literary example (0.8652 versus 0.5522). That is a development observation, not a pass for the matched 20-piece acceptance criterion.
+
+The lightly edited AI example exposes a split: the model leans AI at 0.7203 while style leans human at 0.4570. Their gap is below 0.50, so the ordinary weighted average gives 0.6413, which stays unsure. For a stronger constructed disagreement (0.95, 0.10), the weighted result 0.695 is capped at 0.60. This latter example tests the rule; it is not an observed text result.
+
+The unusual generated paragraph receives a human label at 0.1160. This is a real false negative: unusual word choices and uneven sentence lengths fool both signals. The formal human passage remains unsure at 0.4756. I kept the original weights and thresholds rather than adjusting them to make these examples look better. The sentence splitter does not recognize every boundary before a closing quote, and one-sentence passages return neutral style evidence. Public-domain text may also overlap GPT-2 training data, so these examples do not estimate performance on new writing.
+
+Sources for the human excerpts: [Carroll, chapter 1](https://www.gutenberg.org/files/11/11-0.txt) and [National Archives, Declaration transcript](https://www.archives.gov/founding-docs/declaration-transcript). Neither excerpt is my own writing.
 
 ## Label Variants
 

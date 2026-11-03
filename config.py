@@ -47,42 +47,19 @@ DETECTOR_MODEL = os.getenv("AI201_DETECTOR_MODEL", "gpt2")
 DETECTOR_MAX_TOKENS = 400
 
 
-# ─── Scoring (Milestone 4) ───────────────────────────────────────────────────
-# How much each signal counts toward the combined score.
-#
-# ⚠️ These are placeholders. Milestone 4 asks you to write your combining rule
-# down BEFORE you code it, and to put the numbers in your README. Whatever you
-# decide, it goes here.
-
-WEIGHT_MODEL_SIGNAL = 0.5
-WEIGHT_STYLE_SIGNAL = 0.5
-
-
-# ─── Thresholds (Milestone 5) ────────────────────────────────────────────────
-# Where one label becomes another. Scores run 0.0 (confidently human) to 1.0
-# (confidently AI).
-#
-#   score < HUMAN_THRESHOLD          -> high-confidence human
-#   between the two                  -> unsure
-#   score > AI_THRESHOLD             -> high-confidence AI
-#
-# ⚠️ This is where your false-positive decision from Milestone 1 actually gets
-# made. Widening the unsure band means fewer wrong accusations and more AI text
-# getting through. There is no setting that avoids the trade — only settings
-# that decide who pays for it.
-
-HUMAN_THRESHOLD = 0.35
-AI_THRESHOLD = 0.65
-
-# ⚠️ One thing that catches people out in Milestone 5. A weighted average can
-# only land between its two inputs — so while `style_signal` is still the stub
-# returning 0.5, the combined score can never leave 0.25–0.75 no matter what
-# the model signal says, and the human label needs a model score below 0.20 to
-# be reachable at all.
-#
-# If a label you can't reach is the problem, the fix is upstream of the
-# thresholds: a style signal that actually varies. `scoring.label_ranges()`
-# prints the bands; the reachable range is a different question.
+# Scoring: rule documented before implementation in README.md.
+WEIGHT_MODEL_SIGNAL = 0.70
+WEIGHT_STYLE_SIGNAL = 0.30
+HUMAN_THRESHOLD = 0.25
+AI_THRESHOLD = 0.80
+DISAGREEMENT_THRESHOLD = 0.50
+DISAGREEMENT_FLOOR = 0.40
+DISAGREEMENT_CEILING = 0.60
+STYLE_MIN_WORDS = 20
+STYLE_PUNCTUATION_SCALE = 0.12
+STYLE_WEIGHT_SPREAD = 0.50
+STYLE_WEIGHT_VOCAB = 0.30
+STYLE_WEIGHT_PUNCTUATION = 0.20
 
 
 # ─── Rate limiting (UNIT 8) ──────────────────────────────────────────────────

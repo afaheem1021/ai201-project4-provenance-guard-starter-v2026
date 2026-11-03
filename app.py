@@ -31,6 +31,8 @@ from flask import Flask, jsonify, request
 import audit
 import config
 import detector
+import scoring
+import stylometry
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = config.MAX_REQUEST_BYTES
@@ -184,13 +186,15 @@ def submit():
     except ValueError:
         return error("text_too_short", "Please provide at least a few words so the detector can score them.")
     content_id = str(uuid.uuid4())
-    # Milestone 3: one real signal; confidence and label are placeholders.
-    response = {"content_id": content_id, "guess": "unsure", "confidence": 0.5,
-                "label": "One-signal development check; final label not connected.",
-                "model_score": model_score, "style_score": None, "status": "decided"}
-    audit.log_decision(content_id, creator_id.strip(), guess=response["guess"],
-                       model_score=model_score, combined_score=response["confidence"],
-                       label=response["label"])
+    style_score = stylometry.style_signal(text)
+    confidence = scoring.combine_signals(model_score, style_score)
+    guess, label = scoring.score_to_label(confidence)
+    response = {"content_id": content_id, "guess": guess, "confidence": confidence,
+                "label": label, "model_score": model_score, "style_score": style_score,
+                "status": "decided"}
+    audit.log_decision(content_id, creator_id.strip(), guess=guess,
+                       model_score=model_score, style_score=style_score,
+                       combined_score=confidence, label=label)
     return jsonify(response)
 
 

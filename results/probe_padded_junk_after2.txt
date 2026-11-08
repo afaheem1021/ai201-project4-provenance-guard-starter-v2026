@@ -1,0 +1,2 @@
+aaa x30 200 {'guess': 'ai', 'confidence': 0.8464, 'model_score': 0.9949, 'style_score': 0.5}
+emoji words x25 200 {'guess': 'ai', 'confidence': 0.8429, 'model_score': 0.9899, 'style_score': 0.5}

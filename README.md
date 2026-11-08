@@ -384,7 +384,7 @@ What these show:
 
 **FP03**, the non-native speaker writing carefully about their first month in a new country. My system said "unsure", so technically it held. But it scored 0.7446, which is *more AI-like than the real AI essay* (0.6595) and only 0.055 away from an accusation. If that writer had written a slightly more repetitive paragraph, they would have been flagged, while the real AI essay went through as unsure. That's the exact person the starter warned about in `detector.py`, and it's the one I'd least want to explain.
 
-I didn't have a breakout group, so I did the solo version. I asked the AI assistant for three possible causes at different stages without saying which was most likely. It gave me: (1) the **route** has no check for language or register, (2) **signal one** reads simple, common vocabulary as predictable, and (3) the **combining rule** gives signal one 70% of the weight, so it overpowers style. I checked the numbers myself. The route did nothing wrong: it validated and scored normally. Style alone said 0.6033, which is middle of the road. Model alone said 0.8051. 0.7 × 0.8051 + 0.3 × 0.6033 = 0.7446. So the score is mostly signal one. **The cause is signal one**, and the combining rule just passes it through. The weight makes it worse but isn't the source: even at 50/50 FP03 would be 0.70.
+I didn't have a breakout group, so I did the solo version: the AI agent listed three possible causes at different stages, without picking one first: (1) the **route** has no check for language or register, (2) **signal one** reads simple, common vocabulary as predictable, and (3) the **combining rule** gives signal one 70% of the weight, so it overpowers style. Then it was checked against the actual numbers. The route did nothing wrong: it validated and scored normally. Style alone said 0.6033, which is middle of the road. Model alone said 0.8051. 0.7 × 0.8051 + 0.3 × 0.6033 = 0.7446. So the score is mostly signal one. **The cause is signal one**, and the combining rule just passes it through. The weight makes it worse but isn't the source: even at 50/50 FP03 would be 0.70.
 
 ## Run Log: my five criteria (before)
 
@@ -549,3 +549,141 @@ The two failures I *can* fix without making something else worse are separate fr
 ### Stretch I'm adding (declared before starting it)
 
 **A second improvement, measured the same way.** Improvement 1 is the one the assignment requires. After measuring it, I'll make one more change (fixing the floating-point bug in the disagreement rule) and re-run everything again as a third result set, so each change can be compared on its own.
+
+## Improvement: refuse text under 20 words
+
+**What I changed (one thing):** `app.py::submit` now refuses any text with fewer than 20 words (`config.MIN_WORDS_TO_SCORE = 20`) *before* either signal runs. It returns a 400 `text_too_short` and logs the rejection. I picked 20 because that's where my style signal already gives up and returns a neutral 0.5. Below that, I only ever had one real signal. No signal, weight, threshold or label text changed.
+
+**Why this one:** the diagnosis said the evasion and criterion 2 problems come from signal one itself, and I showed above that no weight or threshold fixes them without accusing real writers. The junk-input breaks were different. They happened because the route let non-writing reach the model, and that's fixable at the route without touching the signals.
+
+**One mistake on the way, for honesty:** my first "after" run accidentally went to the *old* server. My stop command didn't match the process name, so the old process kept the port and the new one quietly failed to start. The numbers came back identical, which made me suspicious. I found the old process, deleted those result files, and re-ran. Those requests still show up in `logs/audit.jsonl`, because the log is append-only and I didn't want to edit it.
+
+### Attack set, before vs after
+
+`results/attack_verdicts_before.md` vs `results/attack_verdicts_after.md`. Same judge rules both times.
+
+| Family | Before: held / broke | After: held / broke |
+|---|---|---|
+| evasion | 1 / 9 | 2 / 8 |
+| false_positive | 8 / 0 | 8 / 0 |
+| prompt_injection | 6 / 0 | 6 / 0 |
+| malformed | 17 / 3 | **20 / 0** |
+| flood_same_creator | 12 / 0 | 12 / 0 |
+| **Total** | **44 / 12** | **48 / 8** |
+
+Every row that changed:
+
+| ID | What it is | Before | After | Verdict change |
+|---|---|---|---|---|
+| MF04 | only punctuation | 200, **human** 0.1578 | 400 text_too_short | BROKE → HELD |
+| MF05 | one very long word | 200, **ai** 0.8483 | 400 text_too_short | BROKE → HELD |
+| MF06 | only emoji | 200, **ai** 0.8478 | 400 text_too_short | BROKE → HELD |
+| EV08 | 10-word AI text | 200, unsure 0.3216 | 400 text_too_short | BROKE → HELD |
+| MF03 | control characters | 200, unsure 0.4000 | 400 text_too_short | held → held |
+| MF07 | 17-word Arabic sentence | 200, unsure 0.7845 | 400 text_too_short | held → held |
+| FP08 | real 8-word human note ("Went for a run. Legs hurt. Worth it.") | 200, unsure 0.3756 | 400 text_too_short | held → held |
+| FL01_01–10 | flood rows (9-word text) | 200, human 0.1701 | 400 text_too_short | held → held (11 and 12 still 429) |
+
+Every other attack came back with exactly the same scores.
+
+**Did it help? Yes, for what it targeted:** all three junk breaks are fixed and nothing that used to hold now breaks. EV08 flipped too, but only because a refusal counts as held under my rule. The detector didn't get any better at spotting AI.
+
+**What it cost:**
+
+- **FP08**, a real person's 8-word note, now gets "please send at least 20 words" instead of a result. I think that's more honest than "unsure", but it's still a real writer we turn away.
+- **MF07**, Arabic text, is now refused for being short, not for being Arabic. A *longer* Arabic piece would still get scored, and GPT-2 gave this one 0.9064. I haven't tested that, but I'd expect a longer Arabic piece to land near or over the AI line.
+- Short pieces (poems, captions) can't be checked at all now.
+
+### My five criteria, before vs after
+
+Before: `results/run_2026-11-08_1354_before.md` + `results/extra_2026-11-08_1357_before.json`. After: `results/run_2026-11-08_1401_after.md` + `results/extra_2026-11-08_1404_after.json`.
+
+| Criterion | Target | Before (runs 1/2/3) | Verdict | After (runs 1/2/3) | Verdict |
+|---|---|---|---|---|---|
+| 1. Own-writing stand-ins labelled AI | ≤ 1 of 10 | 0/10, 0/10, 0/10 | MET | 0/10, 0/10, 0/10 | MET |
+| 2. Mean AI − mean human | ≥ 0.20 | +0.1681 ×3 | MISSED | +0.1681 ×3 | MISSED |
+| 3. Labels reached + grid checks | 3/3 and all checks pass | 3/3, disagreement check failed ×3 | MISSED | 3/3, disagreement check failed ×3 | MISSED |
+| 4. Appeals | 5/5 + repeat + 404 | 5/5 ×3 | MET | 5/5 ×3 | MET |
+| 5. Bad input | 15/15, 0 decisions | 15/15 ×3 | MET | 15/15 ×3 | MET |
+
+No change, which is what I expected: every criterion text is over 20 words, and none of the criterion 5 bad inputs got as far as the new check. So the improvement fixed attacks without moving any of my own criteria, good or bad.
+
+## Stretch: a second improvement, measured the same way
+
+Declared above before I started. **Change:** `scoring.py::combine_signals` now rounds the gap between the two signals to 6 decimal places before checking it against 0.50, so `0.95 - 0.45` counts as 0.50 like it should. I also fixed the unit test to compare whole hundredths instead of floats. I checked that the new test **fails** on the old code (`AssertionError: 'human' != 'unsure'`) and passes on the new code, so it would have caught this in unit 7.
+
+Third result set, after both improvements: `results/attack_verdicts_after2.md`, `results/run_2026-11-08_1404_after2.md`, `results/extra_2026-11-08_1408_after2.json`.
+
+| Criterion | After improvement 1 | After improvement 2 |
+|---|---|---|
+| 1 | 0/10 ×3, MET | 0/10 ×3, MET |
+| 2 | +0.1681 ×3, MISSED | +0.1681 ×3, MISSED |
+| 3 | 3/3, disagreement check failed ×3, MISSED | 3/3 and every check passes ×3, **MET** |
+| 4 | 5/5 ×3, MET | 5/5 ×3, MET |
+| 5 | 15/15 ×3, MET | 15/15 ×3, MET |
+| Attack set | 48 held / 8 broke | 48 held / 8 broke (every score identical) |
+
+**Did it help?** It fixed criterion 3 and changed nothing else. No real submission in any of my runs had signals exactly 0.50 apart, so no real score moved. It's a small fix, but before it, four score combinations could turn into an AI accusation that my own rule says shouldn't happen.
+
+## What's Still Broken
+
+**Evasion: 8 attacks still get AI text through as "unsure"** (EV01–EV07, EV09). The real problem is that even the *unedited* AI essay scores 0.6595, and plain human writing scores higher than that. To fix it I'd need a better first signal: a newer model than GPT-2, or comparing the text's perplexity under two different models instead of one. I stopped because that's replacing a signal, not tuning one. It would need its own calibration run, and it's more than the "one change" this unit allows. Lowering the threshold isn't an option: I showed it would accuse 6 of the 8 human writers in the attack set before it caught the base essay.
+
+**Criterion 2 is still missed (0.1681 vs 0.20).** Same root cause as the evasion. No reweighting can get there, since even 100% signal one only reaches a 0.1819 gap. Same fix (a better signal one), same reason I stopped.
+
+**Padded junk still gets labelled.** I tested this myself after the fix (`results/probe_padded_junk_after2.txt`): `"aaa "` repeated 30 times got **ai, 0.8464**, and `"🙂ok"` ×25 got **ai, 0.8429**. My check counts words but doesn't care whether they're real words or all the same word. Next I'd also refuse text where very few of the words are different (a very low type-token ratio). I stopped because I only get one change per measured round, and I found this after my round was done.
+
+**The false-positive family "held", but only just.** FP02–FP07 are all real human writing scoring 0.71–0.77, just under my 0.80 line. FP03 (the non-native speaker) is my worst case. Nothing I changed helps them. They're safe only because my AI label is so hard to reach.
+
+**PI02 came within 0.0054 of a human label.** Not because the model obeyed the fake "SYSTEM" line, but because GPT-2 found it surprising. Any odd-looking line pasted on top of AI text pulls the score toward human. This is the same signal-one problem.
+
+**The rate limit can be dodged by changing creator_id**, because the client picks it. A real fix needs a login or an API key. There's no login in this prototype, so I left it.
+
+**The limiter runs before validation**, so a burst of bad requests from one address gets 429 instead of a useful 400. I'd move the input checks in front of the limiter, or not count 400s toward the limit. I didn't, because that changes the limiter again after I'd measured it.
+
+**The log can't replay a decision**, because it doesn't store the text. That's on purpose for privacy, but it means if a writer appeals, the reviewer needs the writer to send the text again.
+
+**Criterion 1 hasn't really been tested on my writing.** The ten pieces are AI-written stand-ins. The honest next step is to put ten real pieces of my own into `HUMAN_STAND_INS` in `scenarios.py` and run `python run_eval.py --label mine`.
+
+### The trade I'd make if this ran for real
+
+I'd keep it tilted toward fewer wrong accusations, even though that means more AI text gets through as "unsure". The people who pay for that are teachers and readers who can't rely on the label, and honest students whose work sits next to AI-written work that wasn't caught. But a false accusation lands on one specific person, often someone like FP03 with the least power to argue back, and I think that's the worse harm.
+
+## How I Used AI (Unit 8)
+
+Same as Unit 7, I'm being upfront: I used an AI coding agent (Claude Code) for almost all of this unit. I gave it the assignment and my repo and asked it to do all six milestones. It turned on the limiter, added rejection logging, ran the attack set and my criteria, wrote the helper scripts in `tools/`, and drafted this write-up. I asked for the write-up to be in plain, simple language.
+
+### Moment 1: the "own writing" problem
+
+Criterion 1 needs ten pieces I wrote myself. When the agent asked me for them, I told it to just make something up. It did write ten casual paragraphs, but it refused to pass them off as mine. It labelled them as AI-written stand-ins in `scenarios.py` and in the run log, and it pointed out that criterion 1 is the exact place where AI text pretending to be human defeats the whole test. So criterion 1's "MET" is about stand-ins, not me, and swapping in my real writing is the first thing on my list.
+
+### Moment 2: the bug my own test hid
+
+The most useful thing in this unit was criterion 3 failing, because my unit-7 test checked the exact same thing and passed. The agent's new check compared score gaps in whole numbers instead of decimals, and four pairs failed. `0.95 - 0.45` isn't exactly 0.5 in Python. My old test used the same decimal math as my code, so it skipped exactly the cases that were broken. The lesson I'm keeping: a test that does the same math as the code it's testing can't catch a math bug.
+
+### Moment 3: the "after" run that wasn't
+
+The first time we re-ran after the fix, the numbers were identical to before, down to the last decimal. Instead of writing "the fix didn't help", the agent checked which process was actually on port 5000 and found the old server still running. If those identical numbers had gone into the README, the whole before/after comparison would have been wrong. I kept that story in the write-up because it's the kind of mistake that's easy to miss.
+
+### The solo "talk this through"
+
+I didn't have a breakout group, so I used the solo prompts. For my worst failure (FP03), the agent listed three possible causes at different pipeline stages without picking one first (the route, signal one, and the combining weight), then checked each against the real scores. It was signal one (0.8051 alone; style alone was 0.6033). I didn't run the "argue the opposite verdict" prompt as a separate step. The closest thing is in the criterion 1 verdict: "MET" is a generous reading when nothing ever reaches 0.80, so the write-up says the target was too easy and how I'd tighten it.
+
+### What I'd still need to do myself
+
+- Put ten pieces of my real writing into `scenarios.py` and re-run criteria 1 and 2.
+- Read through every held/broke mark and every verdict and make sure I agree with them, not just the agent.
+
+### Commands for this unit
+
+```bash
+source .venv/bin/activate
+python -m unittest test_service              # 13 tests
+python app.py                                # terminal 1
+python run_attacks.py --flood 15             # terminal 2: rate limit check
+python run_attacks.py --set attack_set --label before
+python tools/judge_attacks.py results/attack_run_<stamp>_before.md results/attack_verdicts_before.md
+python run_eval.py --label before
+python tools/eval_appeals_and_raw.py --label before    # takes ~4 min (waits a minute between trials)
+python tools/score_eval.py results/run_<stamp>_before.md results/extra_<stamp>_before.json
+```

@@ -1,0 +1,743 @@
+{
+  "produced_by": "tools/eval_appeals_and_raw.py::main",
+  "trials": [
+    {
+      "trial": 1,
+      "criterion_3_grid": {
+        "grid_1001_all_labelled": true,
+        "0.51_vs_0.95_differ": true,
+        "disagreement_pairs_checked": 2652,
+        "disagreement_all_unsure": true
+      },
+      "criterion_4": {
+        "appeals": [
+          {
+            "content_id": "92d95b8d-cddb-400d-b06a-26472c6cf757",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "92d95b8d-cddb-400d-b06a-26472c6cf757",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "7635d8f4-4ef9-4d0e-8f7f-2960d8f90d83",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "7635d8f4-4ef9-4d0e-8f7f-2960d8f90d83",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "7e816029-03fd-43b1-ba04-f1f88859df07",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "7e816029-03fd-43b1-ba04-f1f88859df07",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "a54e5fe4-71aa-458c-9d54-ce4f2b1b406b",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "a54e5fe4-71aa-458c-9d54-ce4f2b1b406b",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "4421ea32-0475-452c-ac97-34f0cfa9b8d7",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "4421ea32-0475-452c-ac97-34f0cfa9b8d7",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          }
+        ],
+        "passed": 5,
+        "repeat_appeal_recorded": true,
+        "unknown_id_404_no_entry": true,
+        "unknown_response": {
+          "status": 404,
+          "body": {
+            "error": "content_not_found",
+            "message": "No submission has that content ID."
+          }
+        }
+      },
+      "criterion_5": {
+        "cases": [
+          {
+            "case": "malformed JSON",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_json",
+              "message": "Send a JSON object with text and creator_id."
+            },
+            "pass": true
+          },
+          {
+            "case": "JSON list",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_json",
+              "message": "Send a JSON object with text and creator_id."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"creator_id\": \"eval_bad_missing_text\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": null, \"creator_id\": \"eval_bad_null\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": 12345, \"creator_id\": \"eval_bad_number\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"   \\n\\t \", \"creator_id\": \"eval_bad_whitespace\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"Some real words here for the check.\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_creator_id",
+              "message": "Creator ID must contain 1 to 100 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"Some real words here for the check.\", \"creator_id\"",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_creator_id",
+              "message": "Creator ID must contain 1 to 100 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"Some real words here for the check.\", \"creator_id\"",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_creator_id",
+              "message": "Creator ID must contain 1 to 100 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "want": 413,
+            "got": 413,
+            "body": {
+              "error": "text_too_large",
+              "message": "Text must be at most 10,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "want": 413,
+            "got": 413,
+            "body": {
+              "error": "request_too_large",
+              "message": "Request body must be at most 100,000 bytes."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: missing reasoning",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_reasoning",
+              "message": "Reasoning must contain 1 to 2,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: blank reasoning",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_reasoning",
+              "message": "Reasoning must contain 1 to 2,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: 2,001-char reasoning",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_reasoning",
+              "message": "Reasoning must contain 1 to 2,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: JSON list",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_json",
+              "message": "Send a JSON object with content_id and reasoning."
+            },
+            "pass": true
+          }
+        ],
+        "passed": 15,
+        "total": 15,
+        "decisions_created_by_bad_input": 0,
+        "appeals_recorded_by_bad_appeals": 0
+      }
+    },
+    {
+      "trial": 2,
+      "criterion_3_grid": {
+        "grid_1001_all_labelled": true,
+        "0.51_vs_0.95_differ": true,
+        "disagreement_pairs_checked": 2652,
+        "disagreement_all_unsure": true
+      },
+      "criterion_4": {
+        "appeals": [
+          {
+            "content_id": "3394bf5e-c55a-4bb7-be75-9862e0609027",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "3394bf5e-c55a-4bb7-be75-9862e0609027",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "b1670c01-70ab-4f0f-80ed-6a2cf687635a",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "b1670c01-70ab-4f0f-80ed-6a2cf687635a",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "c2d05ba8-d3cb-400c-9f33-b2f2713d606a",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "c2d05ba8-d3cb-400c-9f33-b2f2713d606a",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "65275c44-6f9b-4dd2-a757-8a6c54ee6154",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "65275c44-6f9b-4dd2-a757-8a6c54ee6154",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "8fd0fdad-686e-4df0-9cba-004b7c29ecd7",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "8fd0fdad-686e-4df0-9cba-004b7c29ecd7",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          }
+        ],
+        "passed": 5,
+        "repeat_appeal_recorded": true,
+        "unknown_id_404_no_entry": true,
+        "unknown_response": {
+          "status": 404,
+          "body": {
+            "error": "content_not_found",
+            "message": "No submission has that content ID."
+          }
+        }
+      },
+      "criterion_5": {
+        "cases": [
+          {
+            "case": "malformed JSON",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_json",
+              "message": "Send a JSON object with text and creator_id."
+            },
+            "pass": true
+          },
+          {
+            "case": "JSON list",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_json",
+              "message": "Send a JSON object with text and creator_id."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"creator_id\": \"eval_bad_missing_text\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": null, \"creator_id\": \"eval_bad_null\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": 12345, \"creator_id\": \"eval_bad_number\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"   \\n\\t \", \"creator_id\": \"eval_bad_whitespace\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"Some real words here for the check.\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_creator_id",
+              "message": "Creator ID must contain 1 to 100 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"Some real words here for the check.\", \"creator_id\"",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_creator_id",
+              "message": "Creator ID must contain 1 to 100 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"Some real words here for the check.\", \"creator_id\"",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_creator_id",
+              "message": "Creator ID must contain 1 to 100 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "want": 413,
+            "got": 413,
+            "body": {
+              "error": "text_too_large",
+              "message": "Text must be at most 10,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "want": 413,
+            "got": 413,
+            "body": {
+              "error": "request_too_large",
+              "message": "Request body must be at most 100,000 bytes."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: missing reasoning",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_reasoning",
+              "message": "Reasoning must contain 1 to 2,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: blank reasoning",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_reasoning",
+              "message": "Reasoning must contain 1 to 2,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: 2,001-char reasoning",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_reasoning",
+              "message": "Reasoning must contain 1 to 2,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: JSON list",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_json",
+              "message": "Send a JSON object with content_id and reasoning."
+            },
+            "pass": true
+          }
+        ],
+        "passed": 15,
+        "total": 15,
+        "decisions_created_by_bad_input": 0,
+        "appeals_recorded_by_bad_appeals": 0
+      }
+    },
+    {
+      "trial": 3,
+      "criterion_3_grid": {
+        "grid_1001_all_labelled": true,
+        "0.51_vs_0.95_differ": true,
+        "disagreement_pairs_checked": 2652,
+        "disagreement_all_unsure": true
+      },
+      "criterion_4": {
+        "appeals": [
+          {
+            "content_id": "9d609a4e-6d5d-4e8f-b944-fd244609f923",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "9d609a4e-6d5d-4e8f-b944-fd244609f923",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "123f175d-bc7f-47f4-9cf7-d19388746fe4",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "123f175d-bc7f-47f4-9cf7-d19388746fe4",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "6a8d68d3-5a96-4235-a777-aec151c0ce49",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "6a8d68d3-5a96-4235-a777-aec151c0ce49",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "b4563889-48fe-4356-83e8-58dd1f8058e1",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "b4563889-48fe-4356-83e8-58dd1f8058e1",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          },
+          {
+            "content_id": "0dd6b594-3b7a-4d6e-9cc4-6a07fbdb05f8",
+            "appeal_status": 200,
+            "appeal_body": {
+              "content_id": "0dd6b594-3b7a-4d6e-9cc4-6a07fbdb05f8",
+              "message": "Your appeal has been recorded. Your submission is under review.",
+              "status": "under_review"
+            },
+            "appeal_entries": 1,
+            "original_unchanged": true,
+            "content_status": "under_review",
+            "pass": true
+          }
+        ],
+        "passed": 5,
+        "repeat_appeal_recorded": true,
+        "unknown_id_404_no_entry": true,
+        "unknown_response": {
+          "status": 404,
+          "body": {
+            "error": "content_not_found",
+            "message": "No submission has that content ID."
+          }
+        }
+      },
+      "criterion_5": {
+        "cases": [
+          {
+            "case": "malformed JSON",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_json",
+              "message": "Send a JSON object with text and creator_id."
+            },
+            "pass": true
+          },
+          {
+            "case": "JSON list",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_json",
+              "message": "Send a JSON object with text and creator_id."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"creator_id\": \"eval_bad_missing_text\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": null, \"creator_id\": \"eval_bad_null\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": 12345, \"creator_id\": \"eval_bad_number\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"   \\n\\t \", \"creator_id\": \"eval_bad_whitespace\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_text",
+              "message": "Text must be a nonempty string."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"Some real words here for the check.\"}",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_creator_id",
+              "message": "Creator ID must contain 1 to 100 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"Some real words here for the check.\", \"creator_id\"",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_creator_id",
+              "message": "Creator ID must contain 1 to 100 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"Some real words here for the check.\", \"creator_id\"",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_creator_id",
+              "message": "Creator ID must contain 1 to 100 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "want": 413,
+            "got": 413,
+            "body": {
+              "error": "text_too_large",
+              "message": "Text must be at most 10,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "body: {\"text\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "want": 413,
+            "got": 413,
+            "body": {
+              "error": "request_too_large",
+              "message": "Request body must be at most 100,000 bytes."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: missing reasoning",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_reasoning",
+              "message": "Reasoning must contain 1 to 2,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: blank reasoning",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_reasoning",
+              "message": "Reasoning must contain 1 to 2,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: 2,001-char reasoning",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_reasoning",
+              "message": "Reasoning must contain 1 to 2,000 characters."
+            },
+            "pass": true
+          },
+          {
+            "case": "appeal: JSON list",
+            "want": 400,
+            "got": 400,
+            "body": {
+              "error": "invalid_json",
+              "message": "Send a JSON object with content_id and reasoning."
+            },
+            "pass": true
+          }
+        ],
+        "passed": 15,
+        "total": 15,
+        "decisions_created_by_bad_input": 0,
+        "appeals_recorded_by_bad_appeals": 0
+      }
+    }
+  ]
+}

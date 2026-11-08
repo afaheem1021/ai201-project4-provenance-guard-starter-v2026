@@ -1,0 +1,16 @@
+{
+  "note": "Control: the attack set base AI essay (EV03 with its quotation removed), sent unedited before judging evasion rows.",
+  "request": {
+    "text": "The importance of effective communication in the workplace cannot be overstated. Teams that communicate clearly are better positioned to achieve their objectives and avoid costly misunderstandings. There are several strategies organisations can adopt to improve this. First, establishing regular check-ins ensures that information flows consistently between team members. Second, documenting decisions provides a reference point that reduces ambiguity. Finally, encouraging an environment where questions are welcomed helps surface issues early. Implementing these approaches can lead to meaningful improvements in team performance and overall satisfaction.",
+    "creator_id": "control_base_ai_essay"
+  },
+  "response": {
+    "confidence": 0.6595,
+    "content_id": "34932797-b619-4dbb-a880-e716db969539",
+    "guess": "unsure",
+    "label": "We cannot reliably tell how this was written. This is not an accusation. You can ask for a review and explain your writing process.",
+    "model_score": 0.6694,
+    "status": "decided",
+    "style_score": 0.6365
+  }
+}

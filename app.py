@@ -157,35 +157,53 @@ def error(code, message, status=400):
     return jsonify({"error": code, "message": message}), status
 
 
+def _creator_for_log(payload):
+    """Best guess at who sent a refused request, capped so the log can't be bloated."""
+    creator = payload.get("creator_id") if isinstance(payload, dict) else None
+    if isinstance(creator, str) and creator.strip():
+        return creator.strip()[:120]
+    return "unknown"
+
+
+def reject(payload, code, message, status=400):
+    """Refuse a submission AND leave a trace of it in the audit log."""
+    audit.log_rejection(creator_id=_creator_for_log(payload), reason=code,
+                        http_status=status, route=request.path)
+    return error(code, message, status)
+
+
 @app.errorhandler(413)
 def request_too_large(exc):
+    # The body was too big to read, so there is no creator_id to recover.
+    audit.log_rejection(creator_id="unknown", reason="request_too_large",
+                        http_status=413, route=request.path)
     return error("request_too_large", "Request body must be at most 100,000 bytes.", 413)
 
 
 # ── Submission and appeal routes ─────────────────────────────────────────────
 
 @app.post("/submit")
-# @limiter.limit(f"{config.RATE_LIMIT_PER_MINUTE}/minute;{config.RATE_LIMIT_PER_DAY}/day")
+@limiter.limit(f"{config.RATE_LIMIT_PER_MINUTE}/minute;{config.RATE_LIMIT_PER_DAY}/day")
 def submit():
     """Validate, score, persist, and return a submission."""
     payload = request.get_json(silent=True)
     if not isinstance(payload, dict):
-        return error("invalid_json", "Send a JSON object with text and creator_id.")
+        return reject(payload, "invalid_json", "Send a JSON object with text and creator_id.")
     text = payload.get("text")
     creator_id = payload.get("creator_id")
     if not isinstance(text, str) or not text.strip():
-        return error("invalid_text", "Text must be a nonempty string.")
+        return reject(payload, "invalid_text", "Text must be a nonempty string.")
     if len(text) > config.MAX_TEXT_CHARS:
-        return error("text_too_large", "Text must be at most 10,000 characters.", 413)
+        return reject(payload, "text_too_large", "Text must be at most 10,000 characters.", 413)
     if (not isinstance(creator_id, str) or not creator_id.strip()
             or len(creator_id) > config.MAX_CREATOR_CHARS):
-        return error("invalid_creator_id", "Creator ID must contain 1 to 100 characters.")
+        return reject(payload, "invalid_creator_id", "Creator ID must contain 1 to 100 characters.")
     try:
         model_score = detector.model_signal(text)
     except detector.DetectorUnavailable:
-        return error("detector_unavailable", "The local detector could not load. Run python detector.py and try again.", 503)
+        return reject(payload, "detector_unavailable", "The local detector could not load. Run python detector.py and try again.", 503)
     except ValueError:
-        return error("text_too_short", "Please provide at least a few words so the detector can score them.")
+        return reject(payload, "text_too_short", "Please provide at least a few words so the detector can score them.")
     content_id = str(uuid.uuid4())
     style_score = stylometry.style_signal(text)
     confidence = scoring.combine_signals(model_score, style_score)

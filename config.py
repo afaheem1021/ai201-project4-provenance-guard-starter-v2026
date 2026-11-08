@@ -69,10 +69,15 @@ STYLE_WEIGHT_PUNCTUATION = 0.20
 # an hour, and a script sending a thousand variations to map your thresholds.
 # Your README has to say why your numbers and not others.
 
-RATE_LIMITING_ENABLED = os.getenv("AI201_RATE_LIMITS", "0") == "1"
+# Unit 8: on by default now. AI201_RATE_LIMITS=0 still turns it off if needed.
+RATE_LIMITING_ENABLED = os.getenv("AI201_RATE_LIMITS", "1") == "1"
 
+# 10 a minute: a real writer fixing a typo and resubmitting a few times never
+# gets near this, but a script mapping my thresholds slows to a crawl.
+# 100 a day: more than any one person would honestly send, and it means a
+# 1,000-variation probe from one creator_id takes 10 days instead of minutes.
 RATE_LIMIT_PER_MINUTE = 10
-RATE_LIMIT_PER_DAY = 200
+RATE_LIMIT_PER_DAY = 100
 
 # Flask-Limiter warns loudly without this. In-memory is right for one laptop
 # and wrong for anything real — a restart forgets every count, and two copies

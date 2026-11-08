@@ -65,6 +65,10 @@ class EndpointTests(unittest.TestCase):
             patcher.start()
             self.addCleanup(patcher.stop)
         self.client = service.app.test_client()
+        # These are contract tests, not rate-limit tests; flood checks live in run_attacks.py.
+        if hasattr(service.limiter, 'enabled'):
+            service.limiter.enabled = False
+            self.addCleanup(setattr, service.limiter, 'enabled', True)
         self.model_patch = patch.object(detector, 'model_signal', return_value=.92)
         self.model = self.model_patch.start()
         self.addCleanup(self.model_patch.stop)
@@ -100,7 +104,10 @@ class EndpointTests(unittest.TestCase):
         response = self.client.post('/submit', data='{broken', content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.model.assert_not_called()
-        self.assertEqual(audit.read_entries(), [])
+        entries = audit.read_entries()
+        # Every refusal leaves a trace, but none of them becomes a decision.
+        self.assertEqual(len(entries), len(cases) + 1)
+        self.assertTrue(all(e['status'] == 'rejected' and 'reason' in e for e in entries))
 
     def test_size_limits_and_boundary(self):
         response = self.client.post('/submit', json={'text': 'x'*10001, 'creator_id': 'x'})
@@ -118,7 +125,7 @@ class EndpointTests(unittest.TestCase):
             response = self.client.post('/submit', json={'text': 'x', 'creator_id': 'x'})
             self.assertEqual(response.status_code, status)
             self.assertIn('error', response.get_json())
-        self.assertEqual(audit.read_entries(), [])
+        self.assertFalse([e for e in audit.read_entries() if e.get('status') == 'decided'])
 
     def test_five_appeals_preserve_decisions_and_reasoning(self):
         for _ in range(5):

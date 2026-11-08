@@ -18,7 +18,9 @@ def combine_signals(model_score: float, style_score: float) -> float:
     _validate(model_score)
     _validate(style_score)
     score = config.WEIGHT_MODEL_SIGNAL * model_score + config.WEIGHT_STYLE_SIGNAL * style_score
-    if abs(model_score - style_score) >= config.DISAGREEMENT_THRESHOLD:
+    # Round the gap first: in floating point 0.95 - 0.45 is 0.49999999999999994,
+    # which slipped past this check and turned a 0.50 disagreement into an AI label.
+    if round(abs(model_score - style_score), 6) >= config.DISAGREEMENT_THRESHOLD:
         score = min(max(score, config.DISAGREEMENT_FLOOR), config.DISAGREEMENT_CEILING)
     return round(score, 4)
 

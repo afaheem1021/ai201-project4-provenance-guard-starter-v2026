@@ -30,8 +30,10 @@ class ScoringTests(unittest.TestCase):
                 x, y = a/100, b/100
                 score = scoring.combine_signals(x, y)
                 self.assertTrue(0 <= score <= 1)
-                if abs(x-y) >= .50:
-                    self.assertEqual(scoring.score_to_label(score)[0], 'unsure')
+                # Compare in whole hundredths, not floats: the float version of this
+                # check had the same rounding bug as the code and skipped 4 pairs.
+                if abs(a-b) >= 50:
+                    self.assertEqual(scoring.score_to_label(score)[0], 'unsure', (x, y, score))
 
     def test_weighting_and_invalid_numbers(self):
         self.assertAlmostEqual(scoring.combine_signals(.92, .8), .884)

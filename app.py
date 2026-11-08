@@ -198,6 +198,9 @@ def submit():
     if (not isinstance(creator_id, str) or not creator_id.strip()
             or len(creator_id) > config.MAX_CREATOR_CHARS):
         return reject(payload, "invalid_creator_id", "Creator ID must contain 1 to 100 characters.")
+    if len(stylometry.words(text)) < config.MIN_WORDS_TO_SCORE:
+        return reject(payload, "text_too_short",
+                      f"Please send at least {config.MIN_WORDS_TO_SCORE} words. Shorter text is too little to judge either way.")
     try:
         model_score = detector.model_signal(text)
     except detector.DetectorUnavailable:

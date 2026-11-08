@@ -74,7 +74,7 @@ class EndpointTests(unittest.TestCase):
         self.addCleanup(self.model_patch.stop)
 
     def submit(self):
-        response = self.client.post('/submit', json={'text': 'A sample with enough words to score.', 'creator_id': 'test-writer'})
+        response = self.client.post('/submit', json={'text': 'A sample with enough words to score, written plainly so that the length check is satisfied and the mocked model gets called as normal here.', 'creator_id': 'test-writer'})
         self.assertEqual(response.status_code, 200)
         return response.get_json()
 
@@ -116,13 +116,13 @@ class EndpointTests(unittest.TestCase):
         self.assertEqual(response.status_code, 413)
         self.assertIn('message', response.get_json())
         self.model.assert_not_called()
-        response = self.client.post('/submit', json={'text': 'x'*10000, 'creator_id': 'x'*100})
+        response = self.client.post('/submit', json={'text': ('word '*2000)[:10000], 'creator_id': 'x'*100})
         self.assertEqual(response.status_code, 200)
 
     def test_detector_failure_is_json_not_a_fake_decision(self):
         for exc, status in [(detector.DetectorUnavailable('offline'), 503), (ValueError('short'), 400)]:
             self.model.side_effect = exc
-            response = self.client.post('/submit', json={'text': 'x', 'creator_id': 'x'})
+            response = self.client.post('/submit', json={'text': 'word '*25, 'creator_id': 'x'})
             self.assertEqual(response.status_code, status)
             self.assertIn('error', response.get_json())
         self.assertFalse([e for e in audit.read_entries() if e.get('status') == 'decided'])
@@ -158,6 +158,15 @@ class EndpointTests(unittest.TestCase):
         self.assertEqual(self.client.post('/appeal', json={'content_id': 'missing', 'reasoning': 'Reason'}).status_code, 404)
         self.assertEqual(self.client.get('/content/missing').status_code, 404)
         self.assertEqual(audit.read_entries(), before)
+
+    def test_short_or_junk_text_refused_before_model(self):
+        for text in ('!!! ??? ... ,,,', 'a'*300, '🙂'*200, 'Went for a run. Legs hurt. Worth it.', 'word '*19):
+            with self.subTest(text=text[:20]):
+                response = self.client.post('/submit', json={'text': text, 'creator_id': 'x'})
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.get_json()['error'], 'text_too_short')
+        self.model.assert_not_called()
+        self.assertEqual(self.client.post('/submit', json={'text': 'word '*20, 'creator_id': 'x'}).status_code, 200)
 
     def test_ping_health_log(self):
         self.assertTrue(self.client.post('/ping', json={'message':'hello'}).get_json()['ok'])

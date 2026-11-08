@@ -96,3 +96,9 @@ MAX_REQUEST_BYTES = 100_000
 MAX_TEXT_CHARS = 10_000
 MAX_CREATOR_CHARS = 100
 MAX_REASONING_CHARS = 2_000
+
+# Unit 8 improvement: text with fewer words than this is refused before either
+# signal runs. Punctuation, emoji and "aaaa..." have 0-1 words and were getting
+# confident human/AI labels. 20 matches STYLE_MIN_WORDS, the point where my own
+# style signal already admits it has too little evidence.
+MIN_WORDS_TO_SCORE = 20

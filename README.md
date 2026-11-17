@@ -687,3 +687,18 @@ python run_eval.py --label before
 python tools/eval_appeals_and_raw.py --label before    # takes ~4 min (waits a minute between trials)
 python tools/score_eval.py results/run_<stamp>_before.md results/extra_<stamp>_before.json
 ```
+
+
+## Capstone
+
+**What This Extends**
+
+I am extending the existing Provenance Guard submission, scoring, and appeal service from Units 7 and 8. The new work is a reproducible local run path with complete request records and measured runtime cost. The starting commit is `3d4b91a`.
+
+**The Shape**
+
+I chose **Shape A — Deploy and instrument**, using **Path B — local with logs**. I will add request tracing and timing around the existing service, document the environment, and evaluate the result. Model replacement, score/label changes, and a new interface or authentication system are out of scope. The existing rate limiter and both Unit 8 improvements are baseline behavior, not new capstone work. No stretch is declared.
+
+**Running It**
+
+The local startup and clean-checkout procedure will be documented in RUNNING.md. Criteria will be committed before collecting capstone results. The first result set will evaluate the initial operational extension; one subsequent improvement will be evaluated against the same criteria and inputs.

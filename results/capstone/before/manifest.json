@@ -1,0 +1,286 @@
+{
+  "label": "before",
+  "timestamp": "2026-11-17T03:21:36.831534+00:00",
+  "code_revision": "e599f4dec7c474a3428064d68e73b9b16644a29f",
+  "criteria_sha256": "6fb8e1104d194e8ac7301753248b6876e1e024113ebc491a98222e7073e1ad0a",
+  "fixtures_sha256": "fb00a6a21c4c5b7f2f3340db46773ad823b5152988ee0548779463c66b0cb7dd",
+  "initial_git_status": "",
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "executable": "C:\\Users\\ahmed\\Documents\\Codex\\2026-11-16\\i-have-to-work-on-a-3\\work\\clean-venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "processor": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+    "logical_cpus": 12,
+    "packages": {
+      "blinker": "1.9.0",
+      "certifi": "2026.10.23",
+      "charset-normalizer": "3.5.2",
+      "click": "8.5.0",
+      "colorama": "0.4.6",
+      "Deprecated": "3.0.0",
+      "filelock": "4.2.4",
+      "Flask": "3.1.3",
+      "Flask-Limiter": "3.12",
+      "fsspec": "2026.9.0",
+      "gunicorn": "23.0.0",
+      "huggingface_hub": "0.36.2",
+      "idna": "3.20",
+      "itsdangerous": "2.2.0",
+      "Jinja2": "3.1.6",
+      "limits": "5.8.0",
+      "markdown-it-py": "4.2.0",
+      "MarkupSafe": "3.0.4",
+      "mdurl": "0.1.2",
+      "mpmath": "1.3.0",
+      "networkx": "3.7",
+      "numpy": "2.5.4",
+      "ordered-set": "4.1.0",
+      "packaging": "26.3",
+      "pip": "25.0.1",
+      "Pygments": "2.21.0",
+      "PyYAML": "6.0.3",
+      "regex": "2026.9.29",
+      "requests": "2.34.2",
+      "rich": "13.9.4",
+      "safetensors": "0.8.0",
+      "setuptools": "84.2.1",
+      "sympy": "1.14.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.15.0",
+      "tqdm": "4.70.1",
+      "transformers": "4.57.6",
+      "typing_extensions": "4.16.0",
+      "urllib3": "2.8.0",
+      "Werkzeug": "3.1.9",
+      "wrapt": "2.5.1"
+    },
+    "model": {
+      "model": "gpt2",
+      "revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+      "files": [
+        {
+          "name": "config.json",
+          "bytes": 665
+        },
+        {
+          "name": "generation_config.json",
+          "bytes": 124
+        },
+        {
+          "name": "merges.txt",
+          "bytes": 456318
+        },
+        {
+          "name": "model.safetensors",
+          "bytes": 548105171
+        },
+        {
+          "name": "tokenizer_config.json",
+          "bytes": 26
+        },
+        {
+          "name": "tokenizer.json",
+          "bytes": 1355256
+        },
+        {
+          "name": "vocab.json",
+          "bytes": 1042301
+        }
+      ],
+      "total_bytes": 550959861
+    },
+    "cpu_threads_override": null
+  },
+  "trials": [
+    {
+      "trial": 1,
+      "criteria": {
+        "1": {
+          "met": true,
+          "startup_seconds": 1.1868205000000671,
+          "cold_submit_seconds": 9.793703000000278
+        },
+        "2": {
+          "met": true,
+          "complete_records": 22,
+          "total": 22,
+          "audit_unchanged_by_reads": true
+        },
+        "3": {
+          "met": true,
+          "failures_passed": 9,
+          "total": 9,
+          "fault_processes_survived": true,
+          "rate_block_seconds": 1.27381830000013
+        },
+        "4": {
+          "met": true,
+          "under_two_seconds": 10,
+          "count": 10,
+          "mean_elapsed_seconds": 0.16406011000017315,
+          "p95_elapsed_seconds": 0.17583680000007007,
+          "mean_cpu_seconds": 0.9375,
+          "elapsed_seconds": [
+            0.1703458000001774,
+            0.17583680000007007,
+            0.1716681999996581,
+            0.14847670000017388,
+            0.15854940000008355,
+            0.15885070000058477,
+            0.1654359000003751,
+            0.16432090000034805,
+            0.1593603000001167,
+            0.1677564000001439
+          ],
+          "cpu_seconds": [
+            1.0,
+            1.03125,
+            0.921875,
+            0.78125,
+            0.9375,
+            0.9375,
+            0.9375,
+            1.0,
+            0.90625,
+            0.921875
+          ]
+        },
+        "5": {
+          "met": true,
+          "calibration_passed": 6,
+          "total": 6,
+          "appeals_and_restart_preserved": true
+        }
+      }
+    },
+    {
+      "trial": 2,
+      "criteria": {
+        "1": {
+          "met": true,
+          "startup_seconds": 0.549702299999808,
+          "cold_submit_seconds": 6.654918500000349
+        },
+        "2": {
+          "met": true,
+          "complete_records": 22,
+          "total": 22,
+          "audit_unchanged_by_reads": true
+        },
+        "3": {
+          "met": true,
+          "failures_passed": 9,
+          "total": 9,
+          "fault_processes_survived": true,
+          "rate_block_seconds": 1.2627982999993037
+        },
+        "4": {
+          "met": true,
+          "under_two_seconds": 10,
+          "count": 10,
+          "mean_elapsed_seconds": 0.16648484000006647,
+          "p95_elapsed_seconds": 0.1873353999999381,
+          "mean_cpu_seconds": 0.91875,
+          "elapsed_seconds": [
+            0.16027979999944364,
+            0.1873353999999381,
+            0.17406350000055681,
+            0.16282219999993686,
+            0.16763390000051004,
+            0.1760948000001008,
+            0.15752129999964382,
+            0.15867170000001352,
+            0.1595476000002236,
+            0.1608782000002975
+          ],
+          "cpu_seconds": [
+            0.9375,
+            0.9375,
+            0.921875,
+            0.859375,
+            0.921875,
+            1.03125,
+            0.9375,
+            0.90625,
+            0.859375,
+            0.875
+          ]
+        },
+        "5": {
+          "met": true,
+          "calibration_passed": 6,
+          "total": 6,
+          "appeals_and_restart_preserved": true
+        }
+      }
+    },
+    {
+      "trial": 3,
+      "criteria": {
+        "1": {
+          "met": true,
+          "startup_seconds": 0.554511299999831,
+          "cold_submit_seconds": 6.647916100000657
+        },
+        "2": {
+          "met": true,
+          "complete_records": 22,
+          "total": 22,
+          "audit_unchanged_by_reads": true
+        },
+        "3": {
+          "met": true,
+          "failures_passed": 9,
+          "total": 9,
+          "fault_processes_survived": true,
+          "rate_block_seconds": 1.241526800000429
+        },
+        "4": {
+          "met": true,
+          "under_two_seconds": 10,
+          "count": 10,
+          "mean_elapsed_seconds": 0.16525109000003796,
+          "p95_elapsed_seconds": 0.18343409999943106,
+          "mean_cpu_seconds": 0.9328125,
+          "elapsed_seconds": [
+            0.16706189999968046,
+            0.1746995000003153,
+            0.16194460000042454,
+            0.15225350000036997,
+            0.15478410000014264,
+            0.15353109999978187,
+            0.18343409999943106,
+            0.15028260000053706,
+            0.18258009999954083,
+            0.17193940000015573
+          ],
+          "cpu_seconds": [
+            0.953125,
+            0.953125,
+            0.859375,
+            0.9375,
+            0.84375,
+            0.875,
+            0.984375,
+            0.921875,
+            1.015625,
+            0.984375
+          ]
+        },
+        "5": {
+          "met": true,
+          "calibration_passed": 6,
+          "total": 6,
+          "appeals_and_restart_preserved": true
+        }
+      }
+    }
+  ],
+  "verdicts": {
+    "1": "MET",
+    "2": "MET",
+    "3": "MET",
+    "4": "MET",
+    "5": "MET"
+  }
+}

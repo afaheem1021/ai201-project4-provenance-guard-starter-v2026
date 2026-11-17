@@ -1,0 +1,31 @@
+ * Serving Flask app 'app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:63094
+Press CTRL+C to quit
+127.0.0.1 - - [16/Nov/2026 22:22:07] "GET /health HTTP/1.1" 200 -
+[2026-11-16 22:22:07,972] ERROR in app: Exception on /submit [POST]
+Traceback (most recent call last):
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-venv\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-venv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-venv\Lib\site-packages\flask_limiter\extension.py", line 1314, in __inner
+    return cast(R, flask.current_app.ensure_sync(obj)(*a, **k))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-before\app.py", line 207, in submit
+    model_score = detector.model_signal(text)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-before\capstone_fault_server.py", line 19, in fail
+    raise RuntimeError('Controlled capstone fault')
+RuntimeError: Controlled capstone fault
+127.0.0.1 - - [16/Nov/2026 22:22:07] "POST /submit HTTP/1.1" 500 -
+127.0.0.1 - - [16/Nov/2026 22:22:07] "GET /health HTTP/1.1" 200 -

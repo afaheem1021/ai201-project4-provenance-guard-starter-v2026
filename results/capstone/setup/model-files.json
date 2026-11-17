@@ -1,0 +1,35 @@
+{
+  "model": "gpt2",
+  "revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+  "files": [
+    {
+      "name": "config.json",
+      "bytes": 665
+    },
+    {
+      "name": "generation_config.json",
+      "bytes": 124
+    },
+    {
+      "name": "merges.txt",
+      "bytes": 456318
+    },
+    {
+      "name": "model.safetensors",
+      "bytes": 548105171
+    },
+    {
+      "name": "tokenizer_config.json",
+      "bytes": 26
+    },
+    {
+      "name": "tokenizer.json",
+      "bytes": 1355256
+    },
+    {
+      "name": "vocab.json",
+      "bytes": 1042301
+    }
+  ],
+  "total_bytes": 550959861
+}

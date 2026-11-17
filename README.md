@@ -702,3 +702,20 @@ I chose **Shape A — Deploy and instrument**, using **Path B — local with log
 **Running It**
 
 The local startup and clean-checkout procedure will be documented in RUNNING.md. Criteria will be committed before collecting capstone results. The first result set will evaluate the initial operational extension; one subsequent improvement will be evaluated against the same criteria and inputs.
+
+
+**Run Log and Verdicts**
+
+First capstone results, from a clean checkout of `e599f4d` and a newly installed locked environment. Criteria were committed at `0b11575`, before implementation or measurements. All five criteria met their targets in all three trials. Full request and response bodies, matching completion records, audit history, and server output are in `results/capstone/before/`.
+
+| Trial | Startup / cold submit | Complete traces | Failures handled | Warm requests <=2s; mean CPU | Compatibility |
+|---|---|---|---|---|---|
+| 1 | 1.187s / 9.794s | 22/22 | 9/9 | 10/10; 0.9375 CPU s | 6/6 + appeals/restart |
+| 2 | 0.550s / 6.655s | 22/22 | 9/9 | 10/10; 0.9187 CPU s | 6/6 + appeals/restart |
+| 3 | 0.555s / 6.648s | 22/22 | 9/9 | 10/10; 0.9328 CPU s | 6/6 + appeals/restart |
+
+**The Improvement**
+
+Before changing anything further, I measured mean warm latency of 0.165265 elapsed seconds and mean CPU use of 0.929688 CPU seconds per submission over 30 real model calls. The trace records show six PyTorch inference threads. No acceptance criterion was missed, so there is no failed criterion to diagnose. Criterion 4's budget was generous for these short fixtures.
+
+My single improvement will limit PyTorch intra-operation inference to one CPU thread, before the model loads. The hypothesis is that short, batch-one inputs can use less aggregate CPU work with less threading overhead. I have not yet measured the outcome; latency could get worse even if CPU work falls. I will keep all fixtures, targets, weights, labels, and the pinned model unchanged and rerun the complete three-trial evaluation.

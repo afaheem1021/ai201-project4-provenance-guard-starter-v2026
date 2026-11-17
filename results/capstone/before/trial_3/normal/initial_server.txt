@@ -1,0 +1,47 @@
+Code e599f4dec7c474a3428064d68e73b9b16644a29f | session 7473cb61-e95d-468f-a784-9a2da4bd7b8d
+ * Serving Flask app 'app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:63098
+Press CTRL+C to quit
+127.0.0.1 - - [16/Nov/2026 22:22:08] "GET /health HTTP/1.1" 200 -
+`loss_type=None` was set in the config but it is unrecognized. Using the default loss: `ForCausalLMLoss`.
+127.0.0.1 - - [16/Nov/2026 22:22:15] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "POST /appeal HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "GET /content/035fb681-8039-4e65-a483-cf7ba424eef2 HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "POST /submit HTTP/1.1" 400 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "POST /submit HTTP/1.1" 400 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "POST /submit HTTP/1.1" 413 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "POST /appeal HTTP/1.1" 404 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "GET /content/no-such-content HTTP/1.1" 404 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "GET /no-such-route HTTP/1.1" 404 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:15] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:16] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:16] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:16] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:16] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:16] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:16] "POST /submit HTTP/1.1" 429 -
+127.0.0.1 - - [16/Nov/2026 22:22:16] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:16] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:17] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:17] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:17] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:17] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:17] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:18] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:18] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:18] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:18] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:18] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:19] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:19] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:19] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:19] "POST /submit HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:19] "POST /appeal HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:19] "GET /content/035fb681-8039-4e65-a483-cf7ba424eef2 HTTP/1.1" 200 -
+127.0.0.1 - - [16/Nov/2026 22:22:19] "GET /log HTTP/1.1" 200 -

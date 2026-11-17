@@ -1,0 +1,51 @@
+test_bad_submission_matrix_never_calls_model (test_service.EndpointTests.test_bad_submission_matrix_never_calls_model) ... ok
+test_detector_failure_is_json_not_a_fake_decision (test_service.EndpointTests.test_detector_failure_is_json_not_a_fake_decision) ... ok
+test_five_appeals_preserve_decisions_and_reasoning (test_service.EndpointTests.test_five_appeals_preserve_decisions_and_reasoning) ... ok
+test_invalid_appeals_do_not_mutate_history (test_service.EndpointTests.test_invalid_appeals_do_not_mutate_history) ... ok
+test_ping_health_log (test_service.EndpointTests.test_ping_health_log) ... ok
+test_short_or_junk_text_refused_before_model (test_service.EndpointTests.test_short_or_junk_text_refused_before_model) ... ok
+test_size_limits_and_boundary (test_service.EndpointTests.test_size_limits_and_boundary) ... ok
+test_submission_and_persistent_status (test_service.EndpointTests.test_submission_and_persistent_status) ... ok
+test_every_label_boundary_and_grid (test_service.ScoringTests.test_every_label_boundary_and_grid) ... ok
+test_strong_disagreement_stays_unsure (test_service.ScoringTests.test_strong_disagreement_stays_unsure) ... ok
+test_style_empty_short_and_varied (test_service.ScoringTests.test_style_empty_short_and_varied) ... ok
+test_style_measures_have_known_values (test_service.ScoringTests.test_style_measures_have_known_values) ... ok
+test_weighting_and_invalid_numbers (test_service.ScoringTests.test_weighting_and_invalid_numbers) ... ok
+test_invalid_appeal_and_unknown_route_are_traced (test_observability.ObservabilityTests.test_invalid_appeal_and_unknown_route_are_traced) ... ok
+test_oversized_body_is_not_copied_or_parsed (test_observability.ObservabilityTests.test_oversized_body_is_not_copied_or_parsed) ... ok
+test_success_and_reads_leave_business_history_unchanged (test_observability.ObservabilityTests.test_success_and_reads_leave_business_history_unchanged) ... ok
+test_unexpected_exception_is_recorded_once_and_service_survives (test_observability.ObservabilityTests.test_unexpected_exception_is_recorded_once_and_service_survives) ... [2026-11-16 22:21:36,040] ERROR in app: Exception on /submit [POST]
+Traceback (most recent call last):
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-venv\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-venv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-venv\Lib\site-packages\flask_limiter\extension.py", line 1314, in __inner
+    return cast(R, flask.current_app.ensure_sync(obj)(*a, **k))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Documents\Codex\2026-11-16\i-have-to-work-on-a-3\work\clean-before\app.py", line 207, in submit
+    model_score = detector.model_signal(text)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\AppData\Local\Python\pythoncore-3.12-64\Lib\unittest\mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\AppData\Local\Python\pythoncore-3.12-64\Lib\unittest\mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ahmed\AppData\Local\Python\pythoncore-3.12-64\Lib\unittest\mock.py", line 1198, in _execute_mock_call
+    raise effect
+RuntimeError: controlled failure
+ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.281s
+
+OK

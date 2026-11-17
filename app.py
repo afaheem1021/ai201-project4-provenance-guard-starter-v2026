@@ -34,9 +34,11 @@ import config
 import detector
 import scoring
 import stylometry
+import observability
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = config.MAX_REQUEST_BYTES
+observability.install(app)
 
 
 # ── Rate limiting — UNIT 8 ────────────────────────────────────────────────────

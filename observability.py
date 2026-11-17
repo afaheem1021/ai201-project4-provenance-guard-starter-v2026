@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import subprocess
+import sys
 import threading
 import time
 import uuid
@@ -99,6 +100,7 @@ def install(app):
             'duration_ms': round((time.perf_counter() - g.trace_started) * 1000, 6),
             'cpu_ms': round((time.process_time() - g.trace_cpu_started) * 1000, 6),
             'model_loaded_at_start': g.trace_model_loaded,
+            'torch_threads': sys.modules['torch'].get_num_threads() if 'torch' in sys.modules else None,
             'error_code': code, 'error_stage': error_stage, 'exception_type': g.trace_exception,
         }
         config.LOG_DIR.mkdir(parents=True, exist_ok=True)

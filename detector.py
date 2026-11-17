@@ -60,7 +60,10 @@ def _load():
         return _model, _tokenizer
 
     try:
-        import torch  # noqa: F401
+        import torch
+        # Capstone improvement: this local service scores one short text at a time.
+        # Bound intra-operation CPU parallelism before loading/running the model.
+        torch.set_num_threads(1)
         from transformers import AutoModelForCausalLM, AutoTokenizer
     except ImportError as exc:
         raise DetectorUnavailable(

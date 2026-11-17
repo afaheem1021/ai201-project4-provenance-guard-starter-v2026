@@ -41,6 +41,9 @@ DEBUG = os.getenv("AI201_DEBUG", "1") == "1" and HOST in ("127.0.0.1", "localhos
 # what running a model inline in a request actually looks like.
 
 DETECTOR_MODEL = os.getenv("AI201_DETECTOR_MODEL", "gpt2")
+# Freeze the model artifacts used for the capstone; alternate models can specify their revision.
+DETECTOR_REVISION = os.getenv("AI201_DETECTOR_REVISION", "607a30d783dfa663caf39e06633721c8d4cfcd7e" if DETECTOR_MODEL == "gpt2" else None)
+MODEL_OFFLINE = os.getenv("AI201_MODEL_OFFLINE", "0") == "1"
 
 # Longer text gives a steadier reading but takes longer. 400 tokens is roughly
 # 300 words, which is enough for the signal to mean something.
@@ -87,7 +90,7 @@ RATE_LIMIT_STORAGE = "memory://"
 
 # ─── Paths ───────────────────────────────────────────────────────────────────
 
-LOG_DIR = ROOT / "logs"
+LOG_DIR = Path(os.getenv("AI201_LOG_DIR", str(ROOT / "logs"))).resolve()
 AUDIT_LOG = LOG_DIR / "audit.jsonl"
 RESULTS_DIR = ROOT / "results"
 

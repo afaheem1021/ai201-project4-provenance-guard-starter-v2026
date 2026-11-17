@@ -701,6 +701,8 @@ I chose **Shape A — Deploy and instrument**, using **Path B — local with log
 
 **Running It**
 
+The [classroom presentation guide](CLASSROOM_PRESENTATION.md) includes a read-aloud speech, live demonstration commands, a saved-evidence backup plan, and discussion questions.
+
 The exact environment, setup, model download, startup command and repeat commands are in [RUNNING.md](RUNNING.md). After setup, the single PowerShell command is:
 
 ```powershell

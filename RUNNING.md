@@ -34,7 +34,7 @@ After setup, from the repository root:
 .\.venv\Scripts\python.exe run_local.py
 ```
 
-The service listens on `http://127.0.0.1:5000`. Stop it with Ctrl+C. It prints the source commit and a new service-run ID, and returns those identifiers in response headers. A first scored request loads the model into this process; running the download command in a separate process does not warm the server.
+The completed capstone uses one PyTorch inference thread to reduce measured CPU work. The service listens on `http://127.0.0.1:5000`. Stop it with Ctrl+C. It prints the source commit and a new service-run ID, and returns those identifiers in response headers. A first scored request loads the model into this process; running the download command in a separate process does not warm the server.
 
 Optional overrides keep the same startup entry point:
 

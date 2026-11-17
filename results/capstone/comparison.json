@@ -1,0 +1,28 @@
+{
+  "before_commit": "e599f4dec7c474a3428064d68e73b9b16644a29f",
+  "after_commit": "e3929c01fd2e8f48c4e9122493b93e73520783a9",
+  "before_mean_cpu_seconds": 0.9296875,
+  "after_mean_cpu_seconds": 0.38229166666666664,
+  "cpu_reduction_percent": 58.879551820728295,
+  "before_mean_elapsed_seconds": 0.16526534666675918,
+  "after_mean_elapsed_seconds": 0.3922601133334562,
+  "elapsed_increase_percent": 137.35170212325812,
+  "cpu_seconds_per_100_warm_submissions": 38.229166666666664,
+  "before_verdicts": {
+    "1": "MET",
+    "2": "MET",
+    "3": "MET",
+    "4": "MET",
+    "5": "MET"
+  },
+  "after_verdicts": {
+    "1": "MET",
+    "2": "MET",
+    "3": "MET",
+    "4": "MET",
+    "5": "MET"
+  },
+  "unchanged_criteria": true,
+  "unchanged_fixtures": true,
+  "unchanged_packages": true
+}

@@ -1,0 +1,286 @@
+{
+  "label": "after",
+  "timestamp": "2026-11-17T03:24:01.453976+00:00",
+  "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9",
+  "criteria_sha256": "6fb8e1104d194e8ac7301753248b6876e1e024113ebc491a98222e7073e1ad0a",
+  "fixtures_sha256": "fb00a6a21c4c5b7f2f3340db46773ad823b5152988ee0548779463c66b0cb7dd",
+  "initial_git_status": "",
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "executable": "C:\\Users\\ahmed\\Documents\\Codex\\2026-11-16\\i-have-to-work-on-a-3\\work\\clean-venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "processor": "AMD64 Family 23 Model 113 Stepping 0, AuthenticAMD",
+    "logical_cpus": 12,
+    "packages": {
+      "blinker": "1.9.0",
+      "certifi": "2026.10.23",
+      "charset-normalizer": "3.5.2",
+      "click": "8.5.0",
+      "colorama": "0.4.6",
+      "Deprecated": "3.0.0",
+      "filelock": "4.2.4",
+      "Flask": "3.1.3",
+      "Flask-Limiter": "3.12",
+      "fsspec": "2026.9.0",
+      "gunicorn": "23.0.0",
+      "huggingface_hub": "0.36.2",
+      "idna": "3.20",
+      "itsdangerous": "2.2.0",
+      "Jinja2": "3.1.6",
+      "limits": "5.8.0",
+      "markdown-it-py": "4.2.0",
+      "MarkupSafe": "3.0.4",
+      "mdurl": "0.1.2",
+      "mpmath": "1.3.0",
+      "networkx": "3.7",
+      "numpy": "2.5.4",
+      "ordered-set": "4.1.0",
+      "packaging": "26.3",
+      "pip": "25.0.1",
+      "Pygments": "2.21.0",
+      "PyYAML": "6.0.3",
+      "regex": "2026.9.29",
+      "requests": "2.34.2",
+      "rich": "13.9.4",
+      "safetensors": "0.8.0",
+      "setuptools": "84.2.1",
+      "sympy": "1.14.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.15.0",
+      "tqdm": "4.70.1",
+      "transformers": "4.57.6",
+      "typing_extensions": "4.16.0",
+      "urllib3": "2.8.0",
+      "Werkzeug": "3.1.9",
+      "wrapt": "2.5.1"
+    },
+    "model": {
+      "model": "gpt2",
+      "revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+      "files": [
+        {
+          "name": "config.json",
+          "bytes": 665
+        },
+        {
+          "name": "generation_config.json",
+          "bytes": 124
+        },
+        {
+          "name": "merges.txt",
+          "bytes": 456318
+        },
+        {
+          "name": "model.safetensors",
+          "bytes": 548105171
+        },
+        {
+          "name": "tokenizer_config.json",
+          "bytes": 26
+        },
+        {
+          "name": "tokenizer.json",
+          "bytes": 1355256
+        },
+        {
+          "name": "vocab.json",
+          "bytes": 1042301
+        }
+      ],
+      "total_bytes": 550959861
+    },
+    "cpu_threads_override": null
+  },
+  "trials": [
+    {
+      "trial": 1,
+      "criteria": {
+        "1": {
+          "met": true,
+          "startup_seconds": 1.1633927000002586,
+          "cold_submit_seconds": 6.8526504999999815
+        },
+        "2": {
+          "met": true,
+          "complete_records": 22,
+          "total": 22,
+          "audit_unchanged_by_reads": true
+        },
+        "3": {
+          "met": true,
+          "failures_passed": 9,
+          "total": 9,
+          "fault_processes_survived": true,
+          "rate_block_seconds": 1.968343100000311
+        },
+        "4": {
+          "met": true,
+          "under_two_seconds": 10,
+          "count": 10,
+          "mean_elapsed_seconds": 0.4011970600000495,
+          "p95_elapsed_seconds": 0.4389605999995183,
+          "mean_cpu_seconds": 0.39375,
+          "elapsed_seconds": [
+            0.43219390000012936,
+            0.4389605999995183,
+            0.41552430000047025,
+            0.37664630000017496,
+            0.38409609999962413,
+            0.3953715999996348,
+            0.4119989999999234,
+            0.38149220000013884,
+            0.3986649000007674,
+            0.3770217000001139
+          ],
+          "cpu_seconds": [
+            0.4375,
+            0.421875,
+            0.390625,
+            0.375,
+            0.375,
+            0.390625,
+            0.40625,
+            0.375,
+            0.390625,
+            0.375
+          ]
+        },
+        "5": {
+          "met": true,
+          "calibration_passed": 6,
+          "total": 6,
+          "appeals_and_restart_preserved": true
+        }
+      }
+    },
+    {
+      "trial": 2,
+      "criteria": {
+        "1": {
+          "met": true,
+          "startup_seconds": 1.1613365000002887,
+          "cold_submit_seconds": 7.016202699999667
+        },
+        "2": {
+          "met": true,
+          "complete_records": 22,
+          "total": 22,
+          "audit_unchanged_by_reads": true
+        },
+        "3": {
+          "met": true,
+          "failures_passed": 9,
+          "total": 9,
+          "fault_processes_survived": true,
+          "rate_block_seconds": 1.8919699999996737
+        },
+        "4": {
+          "met": true,
+          "under_two_seconds": 10,
+          "count": 10,
+          "mean_elapsed_seconds": 0.3902766400003202,
+          "p95_elapsed_seconds": 0.42218420000062906,
+          "mean_cpu_seconds": 0.3828125,
+          "elapsed_seconds": [
+            0.42218420000062906,
+            0.42139790000055655,
+            0.37536499999987427,
+            0.3633030000000872,
+            0.3942417000007481,
+            0.38383930000054534,
+            0.4016719999999623,
+            0.38826740000058635,
+            0.38457329999982903,
+            0.3679226000003837
+          ],
+          "cpu_seconds": [
+            0.40625,
+            0.40625,
+            0.375,
+            0.359375,
+            0.375,
+            0.375,
+            0.40625,
+            0.375,
+            0.375,
+            0.375
+          ]
+        },
+        "5": {
+          "met": true,
+          "calibration_passed": 6,
+          "total": 6,
+          "appeals_and_restart_preserved": true
+        }
+      }
+    },
+    {
+      "trial": 3,
+      "criteria": {
+        "1": {
+          "met": true,
+          "startup_seconds": 1.1455876999998509,
+          "cold_submit_seconds": 6.867919100000108
+        },
+        "2": {
+          "met": true,
+          "complete_records": 22,
+          "total": 22,
+          "audit_unchanged_by_reads": true
+        },
+        "3": {
+          "met": true,
+          "failures_passed": 9,
+          "total": 9,
+          "fault_processes_survived": true,
+          "rate_block_seconds": 1.8896881000000576
+        },
+        "4": {
+          "met": true,
+          "under_two_seconds": 10,
+          "count": 10,
+          "mean_elapsed_seconds": 0.38530663999999887,
+          "p95_elapsed_seconds": 0.42247689999931026,
+          "mean_cpu_seconds": 0.3703125,
+          "elapsed_seconds": [
+            0.42138950000025943,
+            0.42043570000078034,
+            0.36926649999986694,
+            0.3467673000004652,
+            0.3457480000006399,
+            0.3808767999998963,
+            0.42247689999931026,
+            0.386519199999384,
+            0.3799761000000217,
+            0.37961039999936474
+          ],
+          "cpu_seconds": [
+            0.40625,
+            0.40625,
+            0.359375,
+            0.34375,
+            0.3125,
+            0.375,
+            0.40625,
+            0.359375,
+            0.375,
+            0.359375
+          ]
+        },
+        "5": {
+          "met": true,
+          "calibration_passed": 6,
+          "total": 6,
+          "appeals_and_restart_preserved": true
+        }
+      }
+    }
+  ],
+  "verdicts": {
+    "1": "MET",
+    "2": "MET",
+    "3": "MET",
+    "4": "MET",
+    "5": "MET"
+  }
+}

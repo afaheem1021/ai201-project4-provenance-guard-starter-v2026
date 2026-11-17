@@ -1,0 +1,1 @@
+{"timestamp": "2026-11-17T03:24:41+00:00", "creator_id": "fault_writer", "event": "rejected", "status": "rejected", "reason": "detector_unavailable", "http_status": 503, "route": "/submit"}

@@ -693,29 +693,351 @@ python tools/score_eval.py results/run_<stamp>_before.md results/extra_<stamp>_b
 
 **What This Extends**
 
-I am extending the existing Provenance Guard submission, scoring, and appeal service from Units 7 and 8. The new work is a reproducible local run path with complete request records and measured runtime cost. The starting commit is `3d4b91a`.
+I extended my existing Provenance Guard service from Units 7 and 8. The starting commit was `3d4b91a`. Submission scoring, cautious labels, input validation, rate limiting, appeals, and content lookup already existed. This capstone adds a reproducible local run path, a separate request-completion log, real elapsed/CPU measurements, and a repeatable evaluator. Earlier README sections and results remain intact; the old acceptance criteria are preserved in [docs/criteria-units-7-8.md](docs/criteria-units-7-8.md).
 
 **The Shape**
 
-I chose **Shape A — Deploy and instrument**, using **Path B — local with logs**. I will add request tracing and timing around the existing service, document the environment, and evaluate the result. Model replacement, score/label changes, and a new interface or authentication system are out of scope. The existing rate limiter and both Unit 8 improvements are baseline behavior, not new capstone work. No stretch is declared.
+I chose **Shape A — Deploy and instrument**, using **Path B — local with logs**. The scope was the operational layer around the existing application. Model replacement, score/label changes, and a new interface or authentication system stayed out of scope. The model remains local GPT-2; I did not attempt a small free host. No stretch is claimed. The Unit 8 rate limiter, short-text rejection and floating-point fix are existing work, not capstone improvements.
 
 **Running It**
 
-The local startup and clean-checkout procedure will be documented in RUNNING.md. Criteria will be committed before collecting capstone results. The first result set will evaluate the initial operational extension; one subsequent improvement will be evaluated against the same criteria and inputs.
+The exact environment, setup, model download, startup command and repeat commands are in [RUNNING.md](RUNNING.md). After setup, the single PowerShell command is:
 
+```powershell
+.\.venv\Scripts\python.exe run_local.py
+```
+
+I verified clean checkouts of the same repository at `e599f4d` (before) and `e3929c0` (after), with a fresh virtual environment installed from `requirements-lock.txt`. Both manifests record an empty initial Git status. All three trials in each set started fresh processes, and every trial checked persistence through a further restart. Tests used the same launcher with an available local port and a separate log directory. Code and session response headers verified which server answered.
+
+The environment was Python 3.12.10 on Windows x64 with 12 logical CPUs, torch 2.15.0, transformers 4.57.6, Flask 3.1.3, and Flask-Limiter 3.12. Full package versions are recorded in each manifest. The pinned GPT-2 revision is `607a30d783dfa663caf39e06633721c8d4cfcd7e`. Its seven selected files total **550,959,861 bytes**, measured from the local cache. [Setup evidence](results/capstone/setup/) includes the successful clean installation, dependency check, model-file inventory, and 17 passing regression tests before and after.
+
+**Instrumentation**
+
+`observability.py::install` registers request hooks before the rate limiter. `start_request` records an ID, start counters, model-loaded state, and input description. `finish_request` writes one JSONL completion record including HTTP errors; the exception signal identifies unexpected detector errors. The normal launcher disables debugging/reload and serves one request at a time.
+
+Records include UTC time, request and service-run IDs, code revision, process ID, method, route, input byte count/hash and fixture ID, output status/selected fields/hash, elapsed milliseconds, CPU milliseconds, model-loaded-at-start, actual PyTorch thread count, and error code/stage/type. Oversized bodies are marked unread with their declared size. Full nonprivate test input and response bytes are saved in each `trial.json`, so hashes can be resolved to actual evidence. Raw submitted writing is not copied into the operational log; hashes are not an anonymity guarantee.
+
+The new `requests.jsonl` stays separate from `audit.jsonl`, preserving the existing decision/appeal history. `/log` still reads business history. The timing hook ends before writing the completion record and sending the response; the evaluator's client timer captures the full exchange. CPU time is process-wide and is attributed to requests only because this experiment is sequential. No claim is made about logging after abrupt process termination or disk failure.
+
+These are **ten real successful performance records plus one real malformed-input rejection**, copied without invented values from after-trial 1. Source: `observability.py::finish_request`, [normal/logs/requests.jsonl](results/capstone/after/trial_1/normal/logs/requests.jsonl). The corresponding exact inputs and responses are in [trial.json](results/capstone/after/trial_1/trial.json).
+
+```jsonl
+{"schema_version": 1, "event": "request_completed", "timestamp": "2026-11-17T03:24:12.138+00:00", "service_run_id": "3902f785-4d5d-461a-a7ae-3ef4dcdd433a", "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9", "pid": 16240, "request_id": "46401b3a-7352-4efc-b59c-23ea64ef4b86", "method": "POST", "route": "/submit", "input": {"content_type": "application/json", "declared_bytes": 484, "fixture_id": "performance_01", "query": "", "capture": "hashed", "bytes": 484, "sha256": "34f444d8d655e9abe20c747147f731ca0851dca2825e8c66ae2e11182c70f61c", "json_type": "dict", "fields": ["creator_id", "text"], "text_chars": 440}, "http_status": 200, "output": {"bytes": 294, "sha256": "0e3ac3ced9ba122963a0062aecaf4321e698750822879d5b3bebce9c47190d98", "content_type": "application/json", "fields": {"content_id": "564dd8c7-b44d-4777-bb9a-6fab56d04e81", "guess": "unsure", "confidence": 0.5815, "model_score": 0.6088, "style_score": 0.5179, "status": "decided"}}, "duration_ms": 429.3209, "cpu_ms": 437.5, "model_loaded_at_start": true, "torch_threads": 1, "error_code": null, "error_stage": null, "exception_type": null}
+{"schema_version": 1, "event": "request_completed", "timestamp": "2026-11-17T03:24:12.591+00:00", "service_run_id": "3902f785-4d5d-461a-a7ae-3ef4dcdd433a", "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9", "pid": 16240, "request_id": "09ec56de-6085-4d4a-8b5e-7aa118c97380", "method": "POST", "route": "/submit", "input": {"content_type": "application/json", "declared_bytes": 465, "fixture_id": "performance_02", "query": "", "capture": "hashed", "bytes": 465, "sha256": "c9a361d9734c9e20c2c3090cd67b7b430e5ed71d1ded44700b734b935ad53ac7", "json_type": "dict", "fields": ["creator_id", "text"], "text_chars": 421}, "http_status": 200, "output": {"bytes": 294, "sha256": "1e4873d3e8224feebc65aecd81eeacef5ccc064695b3c917f9cde56d41b41a13", "content_type": "application/json", "fields": {"content_id": "51644a50-6b91-410b-8346-e3ca320f7dd3", "guess": "unsure", "confidence": 0.6561, "model_score": 0.7458, "style_score": 0.4468, "status": "decided"}}, "duration_ms": 436.1992, "cpu_ms": 421.875, "model_loaded_at_start": true, "torch_threads": 1, "error_code": null, "error_stage": null, "exception_type": null}
+{"schema_version": 1, "event": "request_completed", "timestamp": "2026-11-17T03:24:13.022+00:00", "service_run_id": "3902f785-4d5d-461a-a7ae-3ef4dcdd433a", "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9", "pid": 16240, "request_id": "b103f078-6316-48b0-bfd2-ffbca9e65837", "method": "POST", "route": "/submit", "input": {"content_type": "application/json", "declared_bytes": 424, "fixture_id": "performance_03", "query": "", "capture": "hashed", "bytes": 424, "sha256": "aeec99a210d862e2107bad0ca7e375c43e9b2e9fc159ce358aec43ecbcaf452c", "json_type": "dict", "fields": ["creator_id", "text"], "text_chars": 380}, "http_status": 200, "output": {"bytes": 293, "sha256": "cc81ed05e3e446a68e50b66bdfbf76123890ed5a5cbb723cf32f3a632daa4210", "content_type": "application/json", "fields": {"content_id": "030f0cf2-4f43-4339-834f-e3adea3cb349", "guess": "unsure", "confidence": 0.4259, "model_score": 0.4019, "style_score": 0.482, "status": "decided"}}, "duration_ms": 412.0113, "cpu_ms": 390.625, "model_loaded_at_start": true, "torch_threads": 1, "error_code": null, "error_stage": null, "exception_type": null}
+{"schema_version": 1, "event": "request_completed", "timestamp": "2026-11-17T03:24:13.419+00:00", "service_run_id": "3902f785-4d5d-461a-a7ae-3ef4dcdd433a", "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9", "pid": 16240, "request_id": "37f08981-8e6c-446a-ab2f-796144dac261", "method": "POST", "route": "/submit", "input": {"content_type": "application/json", "declared_bytes": 439, "fixture_id": "performance_04", "query": "", "capture": "hashed", "bytes": 439, "sha256": "c9ea0a41b86a7f3d144b2240f3b5949a0c0db40c0653ff09f7a4b889c10a8d9e", "json_type": "dict", "fields": ["creator_id", "text"], "text_chars": 395}, "http_status": 200, "output": {"bytes": 294, "sha256": "8eb97a354d11bd1470aad4894a8d564db76e57948d9fff7c6fe22c6eb16ab5c0", "content_type": "application/json", "fields": {"content_id": "b494f262-c6e8-467f-8401-631d04a803e8", "guess": "unsure", "confidence": 0.3996, "model_score": 0.2947, "style_score": 0.6443, "status": "decided"}}, "duration_ms": 373.038, "cpu_ms": 375.0, "model_loaded_at_start": true, "torch_threads": 1, "error_code": null, "error_stage": null, "exception_type": null}
+{"schema_version": 1, "event": "request_completed", "timestamp": "2026-11-17T03:24:13.818+00:00", "service_run_id": "3902f785-4d5d-461a-a7ae-3ef4dcdd433a", "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9", "pid": 16240, "request_id": "8f8c0839-596a-4044-8dba-1d6495b0c4a3", "method": "POST", "route": "/submit", "input": {"content_type": "application/json", "declared_bytes": 420, "fixture_id": "performance_05", "query": "", "capture": "hashed", "bytes": 420, "sha256": "757e30d3418ce3612bfa9fa724c10acf93c443499958cb8af9a88c9acbadafeb", "json_type": "dict", "fields": ["creator_id", "text"], "text_chars": 376}, "http_status": 200, "output": {"bytes": 294, "sha256": "5ec927a878e63e9ca91bf29f7d433e7591cc944136500ebdd33bab1ce9415eb3", "content_type": "application/json", "fields": {"content_id": "fb33db6a-33ca-43c5-84cf-1c39feda8de0", "guess": "unsure", "confidence": 0.5866, "model_score": 0.6187, "style_score": 0.5117, "status": "decided"}}, "duration_ms": 380.9989, "cpu_ms": 375.0, "model_loaded_at_start": true, "torch_threads": 1, "error_code": null, "error_stage": null, "exception_type": null}
+{"schema_version": 1, "event": "request_completed", "timestamp": "2026-11-17T03:24:14.228+00:00", "service_run_id": "3902f785-4d5d-461a-a7ae-3ef4dcdd433a", "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9", "pid": 16240, "request_id": "829913a6-761f-447f-a23f-9a14d8f11d62", "method": "POST", "route": "/submit", "input": {"content_type": "application/json", "declared_bytes": 428, "fixture_id": "performance_06", "query": "", "capture": "hashed", "bytes": 428, "sha256": "1ad54b600d4a0e9c8d2e99087564a5b1d66cad455d815a7906a5b070ea3a76d7", "json_type": "dict", "fields": ["creator_id", "text"], "text_chars": 384}, "http_status": 200, "output": {"bytes": 292, "sha256": "1c3d852f1ba1343bbe8cc06727e2f0a3d4fe96a744edb5e1574529e47bb5285f", "content_type": "application/json", "fields": {"content_id": "5a5614e6-6659-4525-9963-fdcd6df6db2e", "guess": "unsure", "confidence": 0.6159, "model_score": 0.6785, "style_score": 0.47, "status": "decided"}}, "duration_ms": 392.1111, "cpu_ms": 390.625, "model_loaded_at_start": true, "torch_threads": 1, "error_code": null, "error_stage": null, "exception_type": null}
+{"schema_version": 1, "event": "request_completed", "timestamp": "2026-11-17T03:24:14.653+00:00", "service_run_id": "3902f785-4d5d-461a-a7ae-3ef4dcdd433a", "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9", "pid": 16240, "request_id": "966d0d02-8505-49b2-96bb-839ca386838c", "method": "POST", "route": "/submit", "input": {"content_type": "application/json", "declared_bytes": 479, "fixture_id": "performance_07", "query": "", "capture": "hashed", "bytes": 479, "sha256": "df47b995ae0515a7fb408e6f9e23fe804f78ffc58106253e6e9cab22131f5ade", "json_type": "dict", "fields": ["creator_id", "text"], "text_chars": 435}, "http_status": 200, "output": {"bytes": 294, "sha256": "532d232c06b619904dabca69fb8783b9a7a6f99b3c3a2ef901725605238b7890", "content_type": "application/json", "fields": {"content_id": "41f7ef03-cce2-4c72-a35e-c79cd7c7b51c", "guess": "unsure", "confidence": 0.4764, "model_score": 0.5154, "style_score": 0.3855, "status": "decided"}}, "duration_ms": 409.0624, "cpu_ms": 406.25, "model_loaded_at_start": true, "torch_threads": 1, "error_code": null, "error_stage": null, "exception_type": null}
+{"schema_version": 1, "event": "request_completed", "timestamp": "2026-11-17T03:24:15.050+00:00", "service_run_id": "3902f785-4d5d-461a-a7ae-3ef4dcdd433a", "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9", "pid": 16240, "request_id": "ed3c38ef-f49e-4be9-a299-c26805e8c553", "method": "POST", "route": "/submit", "input": {"content_type": "application/json", "declared_bytes": 439, "fixture_id": "performance_08", "query": "", "capture": "hashed", "bytes": 439, "sha256": "ee90fc7a2904b9d594488ae2d44868dc6bbecd3add9abebcca46f68af6bd22fd", "json_type": "dict", "fields": ["creator_id", "text"], "text_chars": 395}, "http_status": 200, "output": {"bytes": 294, "sha256": "48de83687d11753ec4de6623655a13a1eadb2499fbbe27aaef5a121e4a27bd2d", "content_type": "application/json", "fields": {"content_id": "4c9f168c-e1ed-432c-86df-f93bd48a48ef", "guess": "unsure", "confidence": 0.4302, "model_score": 0.4776, "style_score": 0.3196, "status": "decided"}}, "duration_ms": 378.3548, "cpu_ms": 375.0, "model_loaded_at_start": true, "torch_threads": 1, "error_code": null, "error_stage": null, "exception_type": null}
+{"schema_version": 1, "event": "request_completed", "timestamp": "2026-11-17T03:24:15.464+00:00", "service_run_id": "3902f785-4d5d-461a-a7ae-3ef4dcdd433a", "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9", "pid": 16240, "request_id": "8357c586-3f5d-4eac-bbf4-7e042038dc44", "method": "POST", "route": "/submit", "input": {"content_type": "application/json", "declared_bytes": 442, "fixture_id": "performance_09", "query": "", "capture": "hashed", "bytes": 442, "sha256": "878996775483f58bce092a077d2e367a83eb85cd67dfe6d0598aa1928fe21c8f", "json_type": "dict", "fields": ["creator_id", "text"], "text_chars": 398}, "http_status": 200, "output": {"bytes": 293, "sha256": "1730c9dc237e46b676bd5486b7932cc76144b1680388753640fc3c0ae27fd9a9", "content_type": "application/json", "fields": {"content_id": "77340eee-44ac-4977-af26-27512a26cec6", "guess": "unsure", "confidence": 0.641, "model_score": 0.7146, "style_score": 0.4694, "status": "decided"}}, "duration_ms": 395.2899, "cpu_ms": 390.625, "model_loaded_at_start": true, "torch_threads": 1, "error_code": null, "error_stage": null, "exception_type": null}
+{"schema_version": 1, "event": "request_completed", "timestamp": "2026-11-17T03:24:15.857+00:00", "service_run_id": "3902f785-4d5d-461a-a7ae-3ef4dcdd433a", "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9", "pid": 16240, "request_id": "c75a8e25-3a16-40ec-b0ca-c3ae545166dd", "method": "POST", "route": "/submit", "input": {"content_type": "application/json", "declared_bytes": 410, "fixture_id": "performance_10", "query": "", "capture": "hashed", "bytes": 410, "sha256": "1ab3e7d9a083c09ce001abe26479085810da648c8c35bd23ec9786970a71a11a", "json_type": "dict", "fields": ["creator_id", "text"], "text_chars": 366}, "http_status": 200, "output": {"bytes": 294, "sha256": "054a0f5437e04d91ad73d81e5ca6dfcf31e0ad669768e830dc87567180215865", "content_type": "application/json", "fields": {"content_id": "8a674b5e-fe69-43ea-bc3d-2fc638bf278a", "guess": "unsure", "confidence": 0.5824, "model_score": 0.5968, "style_score": 0.5489, "status": "decided"}}, "duration_ms": 374.4636, "cpu_ms": 375.0, "model_loaded_at_start": true, "torch_threads": 1, "error_code": null, "error_stage": null, "exception_type": null}
+{"schema_version": 1, "event": "request_completed", "timestamp": "2026-11-17T03:24:09.650+00:00", "service_run_id": "3902f785-4d5d-461a-a7ae-3ef4dcdd433a", "code_revision": "e3929c01fd2e8f48c4e9122493b93e73520783a9", "pid": 16240, "request_id": "425950bc-9198-4f76-b456-fff73121704c", "method": "POST", "route": "/submit", "input": {"content_type": "application/json", "declared_bytes": 7, "fixture_id": "malformed_json", "query": "", "capture": "hashed", "bytes": 7, "sha256": "be302461cda285db3ed2d45fb767b23e08ca8808b35a638009937df22b332d73", "json_type": "NoneType"}, "http_status": 400, "output": {"bytes": 82, "sha256": "4957d793f21310d561d0c089f480106e7d6c722a6d9146a2bb8540e06f20eae2", "content_type": "application/json", "fields": {"error": "invalid_json", "message": "Send a JSON object with text and creator_id."}}, "duration_ms": 1.2995, "cpu_ms": 0.0, "model_loaded_at_start": true, "torch_threads": 1, "error_code": "invalid_json", "error_stage": "request_handling", "exception_type": null}
+```
+
+**What It Costs**
+
+I measured ten fixed 50–150-word submissions per trial, after a real warm-up in the same process, and repeated that three times in each result set. These are generated operational fixtures, not my own human-writing samples. No successful slow request was removed, and all 60 performance requests returned 200.
+
+The client used `time.perf_counter()` around the HTTP exchange. The server used `time.process_time()` around request handling for CPU seconds. These clocks measure different things: simultaneous work on several CPU threads can consume more CPU seconds than elapsed seconds. See [Python's timing documentation](https://docs.python.org/3.12/library/time.html#time.process_time). Setup/download, process startup, idle time, and the first model-loading request are excluded from the warm average and identified separately. This is measured compute use, not an electricity bill or a concurrency-capacity estimate.
+
+| Build | Trial | Successful requests | Mean elapsed seconds | Nearest-rank p95 elapsed seconds | Mean CPU seconds |
+|---|---|---|---|---|---|
+| before | 1 | 10 | 0.164060 | 0.175837 | 0.937500 |
+| before | 2 | 10 | 0.166485 | 0.187335 | 0.918750 |
+| before | 3 | 10 | 0.165251 | 0.183434 | 0.932813 |
+| after | 1 | 10 | 0.401197 | 0.438961 | 0.393750 |
+| after | 2 | 10 | 0.390277 | 0.422184 | 0.382812 |
+| after | 3 | 10 | 0.385307 | 0.422477 | 0.370312 |
+
+Across 30 warm requests per build, the mean changed from **0.929688 to 0.382292 CPU seconds per run**, while mean elapsed time changed from **0.165265 to 0.392260 seconds**. Each trial's ten individual timings and the calculation inputs are saved under criterion 4 in the manifests and trial evidence.
+
+For **100 people a day, assuming one submission each to an already-warm process**: `100 people × 1 submission/person × 0.382292 CPU seconds/submission = 38.2292 CPU seconds/day`. The corresponding sum of sequential request elapsed times is `100 × 0.392260 = 39.2260 seconds/day`; that is not a throughput promise. The code makes no hosted inference API calls, but local CPU work, memory, setup and idle operation still have costs. Cold first-request times remain visible in criterion 1's tables. Cold here means a fresh server process; the disk model cache and operating-system file cache were not erased.
 
 **Run Log and Verdicts**
 
-First capstone results, from a clean checkout of `e599f4d` and a newly installed locked environment. Criteria were committed at `0b11575`, before implementation or measurements. All five criteria met their targets in all three trials. Full request and response bodies, matching completion records, audit history, and server output are in `results/capstone/before/`.
+The criteria were committed at `0b11575`, before implementation and capstone measurements; first results were committed at `29cf86e`. The five original capstone targets and all fixture bytes stayed unchanged for both sets. The baseline is the initial completed operational extension, not the old Unit 8 runs. `capstone_eval.py::trial` generated the results; real model scoring uses `app.py::submit` and `detector.py::model_signal`. Only the two named fault processes substitute a detector exception.
 
-| Trial | Startup / cold submit | Complete traces | Failures handled | Warm requests <=2s; mean CPU | Compatibility |
+Before the improvement, tested code `e599f4d`:
+
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1 | 1.187s / 9.794s | 22/22 | 9/9 | 10/10; 0.9375 CPU s | 6/6 + appeals/restart |
-| 2 | 0.550s / 6.655s | 22/22 | 9/9 | 10/10; 0.9187 CPU s | 6/6 + appeals/restart |
-| 3 | 0.555s / 6.648s | 22/22 | 9/9 | 10/10; 0.9328 CPU s | 6/6 + appeals/restart |
+| 1. Reproducible startup | Health <=15s; first submit <=30s | 1.187s / 9.794s | 0.550s / 6.655s | 0.555s / 6.648s | MET |
+| 2. Complete request traces | 22/22 complete, unique records; reads preserve audit | 22/22; audit unchanged | 22/22; audit unchanged | 22/22; audit unchanged | MET |
+| 3. Visible failures | 9/9 error cases; fault processes remain alive | 9/9; alive | 9/9; alive | 9/9; alive | MET |
+| 4. Warm latency and CPU budget | >=9/10 within 2s; mean CPU <=5s | 10/10; 0.9375 CPU s | 10/10; 0.9187 CPU s | 10/10; 0.9328 CPU s | MET |
+| 5. Original behavior preserved | 6/6 compatible scores/labels; both appeals survive restart | 6/6; appeals + restart pass | 6/6; appeals + restart pass | 6/6; appeals + restart pass | MET |
+
+**Verdicts and diagnosis:** All five criteria were MET in all three trials. There are no missed acceptance criteria to diagnose. The deliberate 400/404/413/429/503/500 responses are successful bad-path checks, not unreported failures. Criterion 4's budgets were generous for these short texts: every warm request was below 0.188 seconds before the improvement, versus the two-second target.
+
+The useful operational finding was the difference between elapsed and CPU time. The baseline recorded six PyTorch threads and about 0.930 CPU seconds for a 0.165-second request. Parallel work explains why CPU time exceeds elapsed time; thread coordination was a hypothesis to test, not a measured stage breakdown. The improvement below tests a single smaller thread setting.
+
+Actual output supporting each criterion from **before trial 1** follows. These are excerpts of saved responses/records, not hypothetical examples.
+
+Criterion 1 — `capstone_eval.py::Server.__enter__` / `Server.send`, serving `app.py::submit`:
+
+```json
+{
+  "startup": {
+    "command": [
+      "C:\\Users\\ahmed\\Documents\\Codex\\2026-11-16\\i-have-to-work-on-a-3\\work\\clean-venv\\Scripts\\python.exe",
+      "run_local.py",
+      "--port",
+      "62975",
+      "--log-dir",
+      "C:\\Users\\ahmed\\Documents\\Codex\\2026-11-16\\i-have-to-work-on-a-3\\work\\evidence-before\\trial_1\\normal\\logs"
+    ],
+    "cwd": "C:\\Users\\ahmed\\Documents\\Codex\\2026-11-16\\i-have-to-work-on-a-3\\work\\clean-before",
+    "seconds": 1.1868205000000671,
+    "service_run_id": "0af3ca36-5e4e-41d2-ac91-ae942176d4f5"
+  },
+  "first_submit_client_seconds": 9.793703000000278,
+  "first_submit_response": {
+    "confidence": 0.1945,
+    "content_id": "c222b4c9-22d9-4d04-a151-b374c7bcde70",
+    "guess": "human",
+    "label": "We think this was probably written by a person. This estimate does not verify who wrote it. You can ask for a review if it seems wrong.",
+    "model_score": 0.0447,
+    "status": "decided",
+    "style_score": 0.5441
+  }
+}
+```
+
+Criterion 2 — `observability.py::finish_request`, the matching completion record:
+
+```json
+{
+  "schema_version": 1,
+  "event": "request_completed",
+  "timestamp": "2026-11-17T03:21:47.952+00:00",
+  "service_run_id": "0af3ca36-5e4e-41d2-ac91-ae942176d4f5",
+  "code_revision": "e599f4dec7c474a3428064d68e73b9b16644a29f",
+  "pid": 35380,
+  "request_id": "686dad78-ba24-4e3c-9ecc-8ed013065b5f",
+  "method": "POST",
+  "route": "/submit",
+  "input": {
+    "content_type": "application/json",
+    "declared_bytes": 204,
+    "fixture_id": "trace_valid",
+    "query": "",
+    "capture": "hashed",
+    "bytes": 204,
+    "sha256": "c0a9903d49257db711ebbf958debb0e76d215ebf61629d8c3cf5e6f714431560",
+    "json_type": "dict",
+    "fields": [
+      "creator_id",
+      "text"
+    ],
+    "text_chars": 162
+  },
+  "http_status": 200,
+  "output": {
+    "bytes": 297,
+    "sha256": "8faf2b1e9ff957e566eb9e073ac51c364831fe6095d88700377627dc065ef7f0",
+    "content_type": "application/json",
+    "fields": {
+      "content_id": "c222b4c9-22d9-4d04-a151-b374c7bcde70",
+      "guess": "human",
+      "confidence": 0.1945,
+      "model_score": 0.0447,
+      "style_score": 0.5441,
+      "status": "decided"
+    }
+  },
+  "duration_ms": 9790.0291,
+  "cpu_ms": 8296.875,
+  "model_loaded_at_start": false,
+  "torch_threads": 6,
+  "error_code": null,
+  "error_stage": null,
+  "exception_type": null
+}
+```
+
+Criterion 3 — `capstone_fault_server.py::main` deliberately raises `DetectorUnavailable`; `app.py::submit` returns 503 and the same process subsequently answers health checks:
+
+```json
+{
+  "response": {
+    "error": "detector_unavailable",
+    "message": "The local detector could not load. Run python detector.py and try again."
+  },
+  "http_status": 503,
+  "record": {
+    "schema_version": 1,
+    "event": "request_completed",
+    "timestamp": "2026-11-17T03:21:54.114+00:00",
+    "service_run_id": "f988914a-f423-48ea-ac19-ce3d3b342730",
+    "code_revision": "e599f4dec7c474a3428064d68e73b9b16644a29f",
+    "pid": 34272,
+    "request_id": "856f0a28-0e8e-457a-9d6a-00abfe94ec78",
+    "method": "POST",
+    "route": "/submit",
+    "input": {
+      "content_type": "application/json",
+      "declared_bytes": 204,
+      "fixture_id": "unavailable",
+      "query": "",
+      "capture": "hashed",
+      "bytes": 204,
+      "sha256": "c69814e33169fad7bec866eac4806209cea235f21ce7a1a7cb0e66030de0dd18",
+      "json_type": "dict",
+      "fields": [
+        "creator_id",
+        "text"
+      ],
+      "text_chars": 162
+    },
+    "http_status": 503,
+    "output": {
+      "bytes": 118,
+      "sha256": "663e824a6798fd4c86db6f61fe0b9dee466c0a7028a766609f6465746e60855f",
+      "content_type": "application/json",
+      "fields": {
+        "error": "detector_unavailable",
+        "message": "The local detector could not load. Run python detector.py and try again."
+      }
+    },
+    "duration_ms": 1.4244,
+    "cpu_ms": 0.0,
+    "model_loaded_at_start": false,
+    "torch_threads": null,
+    "error_code": "detector_unavailable",
+    "error_stage": "detector",
+    "exception_type": null
+  },
+  "trial_failure_checks": {
+    "met": true,
+    "failures_passed": 9,
+    "total": 9,
+    "fault_processes_survived": true,
+    "rate_block_seconds": 1.27381830000013
+  }
+}
+```
+
+Criterion 4 — `capstone_eval.py::trial`, real ten-request measurements:
+
+```json
+{
+  "met": true,
+  "under_two_seconds": 10,
+  "count": 10,
+  "mean_elapsed_seconds": 0.16406011000017315,
+  "p95_elapsed_seconds": 0.17583680000007007,
+  "mean_cpu_seconds": 0.9375,
+  "elapsed_seconds": [
+    0.1703458000001774,
+    0.17583680000007007,
+    0.1716681999996581,
+    0.14847670000017388,
+    0.15854940000008355,
+    0.15885070000058477,
+    0.1654359000003751,
+    0.16432090000034805,
+    0.1593603000001167,
+    0.1677564000001439
+  ],
+  "cpu_seconds": [
+    1.0,
+    1.03125,
+    0.921875,
+    0.78125,
+    0.9375,
+    0.9375,
+    0.9375,
+    1.0,
+    0.90625,
+    0.921875
+  ]
+}
+```
+
+Criterion 5 — actual `app.py::get_content` response after the server restart, showing the preserved original decision and both appeals:
+
+```json
+{
+  "appeals": [
+    {
+      "content_id": "c222b4c9-22d9-4d04-a151-b374c7bcde70",
+      "creator_id": "trace_writer",
+      "event": "appeal",
+      "reasoning": "Demonstration appeal: please preserve the original decision and record this request for review.",
+      "status": "under_review",
+      "timestamp": "2026-11-17T03:21:47+00:00"
+    },
+    {
+      "content_id": "c222b4c9-22d9-4d04-a151-b374c7bcde70",
+      "creator_id": "trace_writer",
+      "event": "appeal",
+      "reasoning": "Demonstration appeal: please preserve the original decision and record this request for review.",
+      "status": "under_review",
+      "timestamp": "2026-11-17T03:21:52+00:00"
+    }
+  ],
+  "combined_score": 0.1945,
+  "confidence": 0.1945,
+  "content_id": "c222b4c9-22d9-4d04-a151-b374c7bcde70",
+  "creator_id": "trace_writer",
+  "guess": "human",
+  "label": "We think this was probably written by a person. This estimate does not verify who wrote it. You can ask for a review if it seems wrong.",
+  "model_score": 0.0447,
+  "status": "under_review",
+  "style_score": 0.5441,
+  "timestamp": "2026-11-17T03:21:47+00:00"
+}
+```
 
 **The Improvement**
 
-Before changing anything further, I measured mean warm latency of 0.165265 elapsed seconds and mean CPU use of 0.929688 CPU seconds per submission over 30 real model calls. The trace records show six PyTorch inference threads. No acceptance criterion was missed, so there is no failed criterion to diagnose. Criterion 4's budget was generous for these short fixtures.
+I made one operational change at `e3929c0`: `detector.py::_load` now calls `torch.set_num_threads(1)` before loading/running the model. The baseline used six intra-operation threads. PyTorch documents that this setting controls CPU intra-operation parallelism and should be applied before model work: [torch.set_num_threads](https://docs.pytorch.org/docs/2.15/generated/torch.set_num_threads.html). I changed no weights, labels, thresholds, fixture texts, acceptance targets, or dependency versions.
 
-My single improvement will limit PyTorch intra-operation inference to one CPU thread, before the model loads. The hypothesis is that short, batch-one inputs can use less aggregate CPU work with less threading overhead. I have not yet measured the outcome; latency could get worse even if CPU work falls. I will keep all fixtures, targets, weights, labels, and the pinned model unchanged and rerun the complete three-trial evaluation.
+After the improvement, tested code `e3929c0`:
+
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Reproducible startup | Health <=15s; first submit <=30s | 1.163s / 6.853s | 1.161s / 7.016s | 1.146s / 6.868s | MET |
+| 2. Complete request traces | 22/22 complete, unique records; reads preserve audit | 22/22; audit unchanged | 22/22; audit unchanged | 22/22; audit unchanged | MET |
+| 3. Visible failures | 9/9 error cases; fault processes remain alive | 9/9; alive | 9/9; alive | 9/9; alive | MET |
+| 4. Warm latency and CPU budget | >=9/10 within 2s; mean CPU <=5s | 10/10; 0.3937 CPU s | 10/10; 0.3828 CPU s | 10/10; 0.3703 CPU s | MET |
+| 5. Original behavior preserved | 6/6 compatible scores/labels; both appeals survive restart | 6/6; appeals + restart pass | 6/6; appeals + restart pass | 6/6; appeals + restart pass | MET |
+
+| Measurement across 30 warm requests | Before: 6 threads | After: 1 thread | Observed effect |
+|---|---|---|---|
+| Mean CPU seconds/run | 0.929688 | 0.382292 | **58.9% less CPU work** |
+| Mean elapsed seconds/run | 0.165265 | 0.392260 | **137.4% slower** |
+| Performance responses within 2 seconds | 30/30 | 30/30 | Both meet the original target |
+| Complete matrix records | 66/66 | 66/66 | No missing or duplicate request records |
+| Deliberate failure cases handled | 27/27 | 27/27 | Both sets preserve business history |
+| Six-fixture compatibility checks | 18/18 | 18/18 | Original scoring behavior preserved |
+
+**Did it help?** It reduced aggregate CPU work, at the cost of slower replies. I kept the one-thread setting because the mean reply is still under 0.4 seconds and every measured reply remains within the original two-second budget. It is not a latency improvement. This is evidence from one laptop and one small sequential workload, not a claim that one thread is best for every machine, input length, or load. I did not try several thread counts and select a favorable result; this was the one declared change followed by one complete after-evaluation.
+
+Real compatibility scores from trial 1 in each set (all three trials passed):
+
+| Original fixture | Before guess / combined score | After guess / combined score |
+|---|---|---|
+| generated_conventional | ai / 0.8652 | ai / 0.8652 |
+| human_literary | unsure / 0.5522 | unsure / 0.5522 |
+| mixed | unsure / 0.5543 | unsure / 0.5543 |
+| human_formal | unsure / 0.4756 | unsure / 0.4756 |
+| lightly_edited_ai | unsure / 0.6413 | unsure / 0.6413 |
+| generated_unusual | human / 0.1160 | human / 0.1160 |
+
+**What's Still Broken**
+
+No capstone criterion remains missed. The target I would tighten in a future, separately committed evaluation is **criterion 4**: require **all ten** warm requests within **0.5 seconds**, and mean CPU time no more than **0.5 CPU seconds**. I did not retroactively substitute this tighter target for the frozen two-second/five-CPU-second targets.
+
+The CPU improvement made latency worse, even though it stayed within budget. The experiment covers short texts, one local sequential server, and a cached model; it does not establish performance on long inputs, concurrent users, another operating system, or an empty model cache. I stopped after the one measured change to keep the comparison attributable and the unit bounded.
+
+The original detector's limitations also remain: its predictability score is not proof of authorship, unusual generated writing can receive a human label, and the older own-writing evaluation used generated stand-ins. My capstone fixtures are labeled honestly and do not resolve that accuracy gap. The client-selected creator ID can evade rate limits, in-memory counters reset on restart, and there is no login or staffed review workflow. Disk exhaustion, killed processes, and long-term log rotation are outside the measured scope. I did not expand into model replacement, authentication, or storage redesign during this operational extension.
+
+If I had another unit before treating this as a real authorship product, I would first replace the old stand-ins with documented human-authored writing and evaluate false accusations across writing styles. Better operational measurements cannot establish that the detector's judgments are valid.
+
+**How I Used AI**
+
+**Moment 1 — scope and criteria.** I asked Codex to read the assignment and my existing application carefully, then complete the capstone under my direction and review. It identified missing request timing, unlogged appeal failures, stale setup instructions, and the limits of the existing test runner. I used that review to focus the work on Shape A and a separate request log that preserves business history. Criteria drafting was part of this assistance; the commit order establishes that targets preceded results, but does not establish the assignment's requested unaided authorship.
+
+**Moment 2 — measurement and the tradeoff.** I used Codex to implement the instrumentation and evaluator, execute automated checks, and assemble the actual outputs while I directed and reviewed the work in chat. The first measurements showed six model threads and substantially more CPU seconds than elapsed seconds. The resulting change used one model thread; the full rerun showed lower CPU work and slower replies. I kept both numbers, the original targets, and the unchanged scores in the report. The Git commits use my configured name and email; no agent author or agent co-author line is added.
